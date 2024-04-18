@@ -93,3 +93,5 @@ yarn-error.log*
 # solidity-coverage files
 /coverage
 /coverage.json
+
+/.vscode
