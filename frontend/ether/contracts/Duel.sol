@@ -27,6 +27,7 @@ contract Duel {
   event Disagreement();
 
   constructor(address _arbiter, uint _playPeriod) payable {
+    require(msg.value > 0, "You should pay your bet");
     arbiter = _arbiter;
     host = msg.sender;
     bet = msg.value;
@@ -39,13 +40,14 @@ contract Duel {
     player2 = msg.sender;
   }
 
-  function excludePlayer2() internal anyPlayer player2Joined beforeStart {
+  function excludePlayer2() external anyPlayer player2Joined beforeStart {
     (bool s,) = player2.call{value: bet}("");
     require(s);
     player2 = address(0);
   }
 
   function cancel() external onlyHost beforeStart {
+    // return all bets to players, close game
     if (player2 != address(0)) {
       (bool s2,) = player2.call{value: bet}("");
       require(s2);
@@ -64,6 +66,8 @@ contract Duel {
   }
 
   function voteForDraw() external anyPlayer afterStart {
+    // set vote of player, if enough vote - call draw
+    // if play period is over - any player can call draw
     if (block.timestamp < timeStart + playPeriod) {
       require(!drawVotes[msg.sender], "You already voted");
       drawVotes[msg.sender] = true;
@@ -80,6 +84,8 @@ contract Duel {
   }
 
   function voteForPlace(uint8 _place) external anyPlayer afterStart {
+    // player set his opinion of place he takes
+    // if play period is over - place player calls accepts and game ends
     require(_place == 1 || _place == 2, "Invalid place (should be 1 or 2)");
     if (block.timestamp < timeStart + playPeriod) {
       require(placeVotes[msg.sender] == 0, "You already voted");      
@@ -112,6 +118,7 @@ contract Duel {
   }
 
   function forceAppointWinner(address _winner) external onlyArbiter disagreed {
+    // arbiter apoint winner if there is disagreement of places taken
     require(host == _winner || player2 == _winner, "Address must be player in this game");
     _rewardTheWinner(_winner);
   }
