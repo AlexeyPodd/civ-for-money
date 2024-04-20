@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 
 contract Duel {
-  uint8 commisionProcent = 5;
+  uint8 commissionPercent = 5;
 
   address public arbiter;
   address public host;
@@ -34,7 +34,7 @@ contract Duel {
     playPeriod = _playPeriod;
   }
 
-  function join() external payable beforeStart {
+  function join() external payable {
     require(player2 == address(0), "Slot is already taken");
     require(msg.value >= bet, "Your bet amount is insufficient");
     player2 = msg.sender;
@@ -69,7 +69,7 @@ contract Duel {
     // set vote of player, if enough vote - call draw
     // if play period is over - any player can call draw
     if (block.timestamp < timeStart + playPeriod) {
-      require(!drawVotes[msg.sender], "You already voted");
+      require(!drawVotes[msg.sender], "You have already voted");
       drawVotes[msg.sender] = true;
       _checkDraw();
     } else {
@@ -87,24 +87,19 @@ contract Duel {
     // player set his opinion of place he takes
     // if play period is over - place player calls accepts and game ends
     require(_place == 1 || _place == 2, "Invalid place (should be 1 or 2)");
-    if (block.timestamp < timeStart + playPeriod) {
-      require(placeVotes[msg.sender] == 0, "You already voted");      
-      placeVotes[msg.sender] = _place;
-      _checkPlaces();
-    } else {
-      placeVotes[msg.sender] = _place;
-      _appointWinner();      
+    placeVotes[msg.sender] = _place;
+    if (block.timestamp < timeStart + playPeriod) {     
+      if (placeVotes[host] != 0 && placeVotes[player2] != 0) {
+        _appointWinner();
     }
-  }
-
-  function _checkPlaces() internal {
-    if (placeVotes[host] != 0 && placeVotes[player2] != 0) {
-      _appointWinner();
+    } else {
+      _appointWinner();      
     }
   }
 
   function _appointWinner() internal {
     if (placeVotes[host] != placeVotes[player2]) {
+      if (disagreement) disagreement = false;
       if (placeVotes[msg.sender] == 1) {
         _rewardTheWinner(msg.sender);
       } else {
@@ -114,7 +109,6 @@ contract Duel {
       disagreement = true;
       emit Disagreement();
     }
-    closed = true;
   }
 
   function forceAppointWinner(address _winner) external onlyArbiter disagreed {
@@ -124,10 +118,12 @@ contract Duel {
   }
 
   function _rewardTheWinner(address _winner) internal {
-    (bool s,) = arbiter.call{value: address(this).balance * commisionProcent / 100}("");
+    (bool s,) = arbiter.call{value: address(this).balance * commissionPercent / 100}("");
     require(s);
     (s,) = _winner.call{value: address(this).balance}("");
     require(s);
+
+    closed = true;
     emit Victory(_winner);
   }
 
@@ -136,7 +132,7 @@ contract Duel {
   }
 
   function _callDraw() internal {
-      (bool s,) = arbiter.call{value: address(this).balance * commisionProcent / 100}("");
+      (bool s,) = arbiter.call{value: address(this).balance * commissionPercent / 100}("");
       require(s);
 
       uint prizeFund = address(this).balance;

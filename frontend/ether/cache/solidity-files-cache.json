@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/home/alex/CivForMoney/frontend/ether/contracts/Duel.sol": {
-      "lastModificationDate": 1713512962991,
-      "contentHash": "412ecde4d324e38a2c3fe3e635437ed9",
+      "lastModificationDate": 1713601014261,
+      "contentHash": "881ada34c8e643f7c45f8ba7034c448d",
       "sourceName": "contracts/Duel.sol",
       "solcConfig": {
         "version": "0.8.24",
