@@ -87,6 +87,11 @@ describe("Duel", function () {
 
       await expect(duel.connect(player2).join({ value: betSize })).to.be.reverted;
     });
+    it("Should emit event Joined", async function () {
+      const { duel, player2, betSize } = await loadFixture(deployFixture);
+
+      await expect(duel.connect(player2).join({ value: betSize })).to.emit(duel, "Joined").withArgs(await player2.getAddress());
+    });
   });
 
   describe("Starting a game", function () {
@@ -133,6 +138,13 @@ describe("Duel", function () {
 
       expect(await duel.player2()).to.be.equal(ethers.ZeroAddress, "Slot 2 was not released");
       expect(await ethers.provider.getBalance(await duel.getAddress())).to.be.equal(betSize, "Bet was not returned");
+    });
+    it("Should emit event SlotFreed when exiting game", async function () {
+      const { duel, player2, betSize } = await loadFixture(deployFixture);
+      const joinTxn = await duel.connect(player2).join({ value: betSize });
+      await joinTxn.wait();
+
+      await expect(duel.connect(player2).excludePlayer2()).to.emit(duel, "SlotFreed");
     });
     it("Should kick player2 by host with refund", async function () {
       const { duel, player2, betSize } = await loadFixture(deployFixture);

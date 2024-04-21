@@ -20,6 +20,8 @@ contract Duel {
   mapping(address => bool) drawVotes;
   mapping(address => uint8) placeVotes;
 
+  event Joined(address player2);
+  event SlotFreed();
   event Cancel();
   event Start(address player2);
   event Victory(address winner);
@@ -38,12 +40,14 @@ contract Duel {
     require(player2 == address(0), "Slot is already taken");
     require(msg.value >= bet, "Your bet amount is insufficient");
     player2 = msg.sender;
+    emit Joined(msg.sender);
   }
 
   function excludePlayer2() external anyPlayer player2Joined beforeStart {
     (bool s,) = player2.call{value: bet}("");
     require(s);
     player2 = address(0);
+    emit SlotFreed();
   }
 
   function cancel() external onlyHost beforeStart {
