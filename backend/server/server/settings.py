@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'social_django',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -58,7 +60,7 @@ ROOT_URLCONF = 'server.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -103,9 +105,32 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.steam.SteamOpenId',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+# SOCIAL_AUTH_REQUIRE_POST = True
+SOCIAL_AUTH_STEAM_API_KEY = os.environ.get('STEAM_API_KEY')
+SOCIAL_AUTH_STEAM_EXTRA_DATA = ['player']
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.user.create_user',
+    'api.authentication.pipeline_utils.get_avatar',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+)
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
+
+AUTH_USER_MODEL = 'api.User'
 
 LANGUAGE_CODE = 'en-us'
 
