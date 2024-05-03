@@ -12,7 +12,6 @@ import Game from "./pages/Game/Game";
 import NewGame from "./pages/NewGame/NewGame";
 import Disputes from "./pages/Disputes/Disputes";
 import Login from "./pages/Login/Login";
-import Registration from "./pages/Registration/Registration";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -23,7 +22,6 @@ const router = createBrowserRouter(
       <Route path="new-game" element={<NewGame />} />
       <Route path="disputes" element={<Disputes />} />
       <Route path="login" element={<Login />} />
-      <Route path="register" element={<Registration />} />
       <Route path="/*" element={<div>404 NOT FOUND</div>} />
     </Route>
   )

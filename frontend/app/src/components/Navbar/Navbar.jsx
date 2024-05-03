@@ -1,5 +1,6 @@
-import { Flex, Heading, Text, HStack, Avatar, AvatarBadge, Button, Link } from "@chakra-ui/react";
+import { Flex, Heading, HStack, Link } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
+import LoginStack from "./LoginStack";
 
 export default function Navbar() {
   const FlexNavStyles = {
@@ -35,15 +36,7 @@ export default function Navbar() {
         </Link>
       </HStack>
 
-      <HStack h="68px" gap="20px" p="10px">
-        <Avatar name="mario" bg="gray.100" src="/img/mario.png">
-          <AvatarBadge width="1.3em" bg="red.500">
-            <Text fontSize="xs" color="white">3</Text>
-          </AvatarBadge>
-        </Avatar>
-        <Text>mario@netninja.dev</Text>
-        <Button colorScheme="blue">Logout</Button>
-      </HStack>
+      <LoginStack />
     </Flex>
   )
 }
