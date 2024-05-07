@@ -1,9 +1,11 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import RegexValidator
 from django.db import models
 
 
 class User(AbstractUser):
     """Overrides the standard user by adding fields"""
+    uuid = models.CharField(max_length=17, null=True, unique=True, validators=[RegexValidator(regex=r'^\d{17}$')])
     avatar = models.URLField(max_length=128, blank=True)
     victories = models.PositiveSmallIntegerField(default=0)
     defeats = models.PositiveSmallIntegerField(default=0)

@@ -1,18 +1,23 @@
-import { useEffect } from "react";
 import parseLinkToGetParams from "../../utils/parseLinkToGetParams"
-import { loginAPI } from "../../api/api";
+import { steamParamsIsValid } from "../../utils/validators";
+import { useLoginMutation } from "../../redux/api";
+import { redirect } from "react-router-dom";
+
 
 export default function Login() {
-  console.log(parseLinkToGetParams());
+  if (!window.location.search) return redirect('/');
 
-  useEffect(() => {
-    async function sendAuthData() {
-      if (window.location.search) {
-        await loginAPI.sendAuthData(window.location.search);
-      }
-    }
-    sendAuthData();
-  }, [])
+  const steamParams = parseLinkToGetParams();
+  if (!steamParamsIsValid(steamParams)) return redirect('/');
+
+
+  const [
+    login,
+    { isLoading, isUninitialized, error, data, isSuccess },
+  ] = useLoginMutation();
+
+  if (isUninitialized) login(steamParams);
+  if (isSuccess) localStorage.setItem("auth_token", data.token);
 
   return (
     <div>Login</div>

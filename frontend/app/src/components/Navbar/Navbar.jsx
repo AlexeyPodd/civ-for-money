@@ -1,6 +1,6 @@
 import { Flex, Heading, HStack, Link } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
-import LoginStack from "./LoginStack";
+import AuthBarContainer from "./AuthBar/AuthBarContainer";
 
 export default function Navbar() {
   const FlexNavStyles = {
@@ -36,7 +36,7 @@ export default function Navbar() {
         </Link>
       </HStack>
 
-      <LoginStack />
+      <AuthBarContainer />
     </Flex>
   )
 }
