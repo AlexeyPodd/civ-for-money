@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { selectAvatar, selectIsAuth, selectUsername } from "../../../redux/authSlice";
+import { selectAvatar, selectIsAuth, selectUsername, selectIsLoggingIn } from "../../../redux/authSlice";
 import AuthBar from "./AuthBar";
 import createSteamLoginLink from "../../../utils/createSteamLoginLink";
 import { useLogoutMutation } from "../../../redux/api";
@@ -9,6 +9,7 @@ export default function AuthBarContainer() {
   const isAuth = useSelector(selectIsAuth);
   const username = useSelector(selectUsername);
   const avatar = useSelector(selectAvatar);
+  const isLoggingIn = useSelector(selectIsLoggingIn);
 
   const [logoutTrigger, { isLoading: isLoggingOut }] = useLogoutMutation();
 
@@ -28,6 +29,7 @@ export default function AuthBarContainer() {
     avatar={avatar}
     username={username}
     logout={logout}
+    isLoggingIn={isLoggingIn}
     isLoggingOut={isLoggingOut}
   />
 }

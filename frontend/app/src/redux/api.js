@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { loggingInFinished, loggingInStarted } from './authSlice';
 
 export const api = createApi({
   baseQuery: fetchBaseQuery({
@@ -24,6 +25,14 @@ export const api = createApi({
         method: 'POST',
         body: steamData,
       }),
+      async onQueryStarted(arg, {dispatch, queryFulfilled}) {
+        dispatch(loggingInStarted());
+        try {
+          await queryFulfilled;
+        } finally {        
+          dispatch(loggingInFinished());
+        }
+      }
     }),
     logout: build.mutation({
       query: () => ({
@@ -31,7 +40,14 @@ export const api = createApi({
         method: 'DELETE',
       })
     }),
+    getUserData: build.query({
+      query: () => '/auth/user-data/',
+    }),
   }),
 });
 
-export const { useLoginMutation, useLogoutMutation } = api;
+export const {
+  useLoginMutation,
+  useLogoutMutation,
+  useGetUserDataQuery
+} = api;

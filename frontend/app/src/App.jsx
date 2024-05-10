@@ -12,12 +12,11 @@ import Game from "./pages/Game/Game";
 import NewGame from "./pages/NewGame/NewGame";
 import Disputes from "./pages/Disputes/Disputes";
 import Login from "./pages/Login/Login";
-import { useSelector, useDispatch } from "react-redux";
 import Preloader from "./components/Preloader/Preloader";
 import { ChakraProvider } from '@chakra-ui/react'
 import { Provider } from 'react-redux'
 import store from './redux/store.js'
-import { selectInitialized } from "./redux/appSlice.js";
+import UseInitiation from "./hoosk/useInitiation.js";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -34,9 +33,11 @@ const router = createBrowserRouter(
 )
 
 function App() {
-  const initialized = useSelector(selectInitialized);
-  
-  // if (!initialized) return <Preloader />
+  const initialized = UseInitiation();
+
+  if (!initialized) {
+    return <Preloader />
+  }
   return (
     <RouterProvider router={router} />
   )
