@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { selectAvatar, selectIsAuth, selectUsername, selectIsLoggingIn } from "../../../redux/authSlice";
 import AuthBar from "./AuthBar";
-import createSteamLoginLink from "../../../utils/createSteamLoginLink";
+
 import { useLogoutMutation } from "../../../redux/api";
 
 
@@ -24,7 +24,6 @@ export default function AuthBarContainer() {
   }
 
   return <AuthBar
-    steamLink={createSteamLoginLink()}
     isAuth={isAuth}
     avatar={avatar}
     username={username}

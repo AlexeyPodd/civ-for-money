@@ -6,6 +6,7 @@ export const authSlice = createSlice({
   initialState: {
     isLoggingIn: false,
     isAuth: false,
+    isStaff: false,
     username: null,
     avatar: null,
     uuid: null,
@@ -30,6 +31,7 @@ export const authSlice = createSlice({
         api.endpoints.login.matchFulfilled,
         (state, { payload }) => {
           state.isAuth = true;
+          state.isStaff = payload.isStaff;
           state.username = payload.username;
           state.avatar = payload.avatar;
           state.uuid = payload.uuid;
@@ -39,6 +41,7 @@ export const authSlice = createSlice({
         api.endpoints.logout.matchFulfilled,
         (state) => {
           state.isAuth = false;
+          state.isStaff = false;
           state.username = null;
           state.avatar = null;
           state.uuid = null;
@@ -50,12 +53,14 @@ export const authSlice = createSlice({
           state.username = payload.username;
           state.avatar = payload.avatar;
           state.uuid = payload.uuid;
+          state.isStaff = payload.isStaff;
         }
       )
   }
 });
 
 export const selectIsAuth = (state) => state.auth.isAuth;
+export const selectIsStaff = (state) => state.auth.isStaff;
 export const selectUsername = (state) => state.auth.username;
 export const selectAvatar = (state) => state.auth.avatar;
 export const selectUUID = (state) => state.auth.uuid;
