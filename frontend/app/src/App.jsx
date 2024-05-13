@@ -7,7 +7,7 @@ import {
 
 import RootLayout from './layouts/RootLayout';
 import Lobby from "./pages/Lobby/Lobby";
-import Game from "./pages/Game/Game";
+import GameContainer from "./pages/Game/GameContainer";
 import Disputes from "./pages/Disputes/Disputes";
 import Login from "./pages/Login/Login";
 import Preloader from "./components/Preloader/Preloader";
@@ -23,7 +23,7 @@ const router = createBrowserRouter(
     <Route path="/" element={<RootLayout />}>
       <Route index element={<Lobby />} />
       <Route path="my-games" element={<MyGamesContainer />} />
-      <Route path="game/:gameId" element={<Game />} />
+      <Route path="game/:gameId" element={<GameContainer />} />
       <Route path="new-game" element={<NewGameContainer />} />
       <Route path="disputes" element={<Disputes />} />
       <Route path="login" element={<Login />} />

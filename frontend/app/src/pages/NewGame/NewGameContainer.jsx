@@ -1,8 +1,8 @@
-import { useSelector } from "react-redux";
 import NewGame from "./NewGame";
-import { selectIsAuth } from "../../redux/authSlice";
+import withLoginOffer from "../../hoc/withLoginOffer";
 
-export default function NewGameContainer() {
-  const isAuth = useSelector(selectIsAuth);
-  return <NewGame isAuth={isAuth} />
+function NewGameContainer() {
+  return <NewGame />
 }
+
+export default withLoginOffer(NewGameContainer);
