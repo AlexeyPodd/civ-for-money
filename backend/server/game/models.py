@@ -13,12 +13,17 @@ class Wallet(models.Model):
 
 class Game(models.Model):
     """Game record"""
+    class GameTitle(models.TextChoices):
+        CIVILIZATION_5 = "CIV5"
+
     sc_address = models.CharField(
         verbose_name="smart contract address",
         max_length=42,
         unique=True,
         validators=[RegexValidator(regex=r'^0x[a-fA-F0-9]{40}$')],
     )
+    title = models.CharField(max_length=32)
+    game = models.CharField(max_length=4, choices=GameTitle.choices, default=GameTitle.choices[0])
     rules = models.ForeignKey('Rules', on_delete=models.PROTECT, related_name='games')
     host = models.ForeignKey(User, on_delete=models.CASCADE, related_name='hosted_games')
     player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='joined_games')

@@ -1,5 +1,7 @@
+import NewGameForm from "./NewGameForm";
+
 export default function NewGame() {  
   return (
-    <div>NewGame</div>
+    <NewGameForm />
   )
 }
