@@ -5,12 +5,6 @@ from django.db import models
 from steam_auth.models import User
 
 
-class Wallet(models.Model):
-    """Ethereum address recordings of players"""
-    address = models.CharField(max_length=42, unique=True, validators=[RegexValidator(regex=r'^0x[a-fA-F0-9]{40}$')])
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="wallets")
-
-
 class Game(models.Model):
     """Game record"""
     class GameTitle(models.TextChoices):
@@ -45,6 +39,7 @@ class Rules(models.Model):
     title = models.CharField(max_length=32)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='rules')
     description = models.TextField(max_length=2048)
+    deleted = models.BooleanField(default=False)
 
     class Meta:
         verbose_name_plural = 'Rules'

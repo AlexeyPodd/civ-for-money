@@ -1,6 +1,8 @@
 from django.urls import path
 
-from steam_auth.views import login, logout, get_user_data
+from .views import login, logout, get_user_data
+
+app_name = 'auth'
 
 urlpatterns = [
     path('login/', login, name='login'),

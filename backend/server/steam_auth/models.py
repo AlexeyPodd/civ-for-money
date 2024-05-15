@@ -25,3 +25,9 @@ class PreBanWarning(models.Model):
 
     class Meta:
         ordering = ['time_creation']
+
+
+class Wallet(models.Model):
+    """Ethereum address recordings of players"""
+    address = models.CharField(max_length=42, unique=True, validators=[RegexValidator(regex=r'^0x[a-fA-F0-9]{40}$')])
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="wallets")

@@ -150,3 +150,17 @@ STEAM_API_KEY = os.environ.get('STEAM_API_KEY')
 
 STEAM_LOGIN_URL = 'https://steamcommunity.com/openid/login'
 STEAM_GET_PLAYER_SUMMARIES_URL = 'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/'
+
+
+# Web3 settings
+ALCHEMY_HTTP_ADDRESS = os.environ.get('ALCHEMY_HTTP_ADDRESS')
+DUEL_ABI = ('[{"inputs":[{"internalType":"address","name":"_arbiter","type":"address"},{"internalType":"address","name"'
+            ':"_beneficiary","type":"address"}],"stateMutability":"payable","type":"constructor"},{"anonymous":false,"i'
+            'nputs":[{"indexed":false,"internalType":"uint256","name":"","type":"uint256"}],"name":"Approved","type":"e'
+            'vent"},{"inputs":[],"name":"approve","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inpu'
+            'ts":[],"name":"arbiter","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability'
+            '":"view","type":"function"},{"inputs":[],"name":"beneficiary","outputs":[{"internalType":"address","name":'
+            '"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"depositor","outputs'
+            '":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"in'
+            'puts":[],"name":"isApproved","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability"'
+            ':"view","type":"function"}]')
