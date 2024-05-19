@@ -1,9 +1,10 @@
 from rest_framework import mixins
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import GenericViewSet
 
-from .models import Rules
+from .models import Rules, Game
 from .permissions import RulesPermission
-from .serializers import RulesSerializer
+from .serializers import RulesSerializer, GameSerializer
 
 
 class RulesViewSet(mixins.CreateModelMixin,
@@ -24,3 +25,13 @@ class RulesViewSet(mixins.CreateModelMixin,
     def perform_destroy(self, instance):
         instance.deleted = True
         instance.save()
+
+
+class GameViewSet(mixins.CreateModelMixin,
+                  mixins.RetrieveModelMixin,
+                  mixins.UpdateModelMixin,
+                  mixins.ListModelMixin,
+                  GenericViewSet):
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+    serializer_class = GameSerializer
+    queryset = Game.objects.all()

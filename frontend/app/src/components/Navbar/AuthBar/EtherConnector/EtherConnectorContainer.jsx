@@ -1,38 +1,78 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { SignerContext } from "../../../../context/SignerContext";
 
 import EtherConnector from "./EtherConnector";
 
 import provider from '../../../../ethereumAPI/provider'
+import { useRegisterUserWalletMutation } from "../../../../redux/api";
+import { useDispatch, useSelector } from "react-redux";
+import { selectWalletConnected, setWalletConnected } from "../../../../redux/authSlice";
 
 
 export default function EtherConnectorContainer() {
   const { signer, setSigner } = useContext(SignerContext);
 
+  const walletConnected = useSelector(selectWalletConnected);
+  const dispatch = useDispatch();
+
+  const [registerUserWallet, { error, isError, isLoading: isRegistering }] = useRegisterUserWalletMutation();
+
   async function initializeSigner() {
-    const accounts = await provider.send('eth_requestAccounts', []);
-    await accountChange(accounts);
-    window.ethereum.on('accountsChanged', accountChange);
+    let accounts = [];
+    try {
+      accounts = await provider.send('eth_requestAccounts', []);
+    }
+    catch (err) {
+      console.error(err);
+    }
+    await onAccountChange(accounts);
   }
 
   function disconnect() {
+    dispatch(setWalletConnected(false));
     setSigner(null);
-    window.ethereum.removeListener('accountsChanged', accountChange);
+    window.ethereum.removeListener('accountsChanged', onAccountChange);
   }
 
-  async function accountChange(accounts) {
+  async function connect() {
+    const s = await provider.getSigner();
+    setSigner(s);
+    window.ethereum.on('accountsChanged', onAccountChange);
+
+    const verifyAddressMessage = 'verify your address';
+    let signature;
+    try {
+      signature = await s.signMessage(verifyAddressMessage);
+    }
+    catch (err) {
+      console.error(err);
+    }
+    if (signature) registerUserWallet({
+      message: verifyAddressMessage,
+      signature: signature,
+    });
+  }
+
+  async function onAccountChange(accounts) {
     if (accounts.length === 0) {
-      alert('You are not connected to Metamask.');
       disconnect();
     } else {
-      setSigner(await provider.getSigner());
+      await connect();
     }
   }
 
+  useEffect(() => {
+    if (isError) {
+      disconnect();
+      alert(`Status ${error.status}\n${error.data}`);
+    }
+  }, [isError, error]);
+
   return <EtherConnector
-    signerIsSet={Boolean(signer)}
+    walletConnected={walletConnected}
+    isRegistering={isRegistering}
     etherAddress={signer && signer.address.toLowerCase()}
     initializeSigner={initializeSigner}
-    disconnect={disconnect}    
+    disconnect={disconnect}
   />
 }

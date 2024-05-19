@@ -1,5 +1,5 @@
 import { selectIsAuth } from "../redux/authSlice";
-import LoginOffer from "../components/LoginOffer/LoginOffer";
+import LoginOffer from "../components/Offers/LoginOffer";
 import { useSelector } from "react-redux";
 
 export default function withLoginOffer(Component) {

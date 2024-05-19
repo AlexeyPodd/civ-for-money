@@ -3,7 +3,12 @@ import { Button } from "@chakra-ui/react";
 import { LinkIcon } from "@chakra-ui/icons";
 
 
-export default function EtherConnector({ signerIsSet, etherAddress, initializeSigner, disconnect }) {
+export default function EtherConnector({
+  isRegistering,
+  walletConnected,
+  etherAddress,
+  initializeSigner,
+  disconnect }) {
   const [showDisconnectButton, setShowDisconnectButton] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
 
@@ -17,12 +22,12 @@ export default function EtherConnector({ signerIsSet, etherAddress, initializeSi
     setShowDisconnectButton(false);
   }
 
-  if (!signerIsSet) return (
+  if (!walletConnected) return (
     <Button
-     colorScheme="yellow"
-     isLoading={isConnecting}
-     onClick={connectWallet}
-     >
+      colorScheme="yellow"
+      isLoading={isConnecting || isRegistering}
+      onClick={connectWallet}
+    >
       Connect Wallet
     </Button>
   )

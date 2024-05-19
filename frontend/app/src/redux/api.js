@@ -25,11 +25,11 @@ export const api = createApi({
         method: 'POST',
         body: steamData,
       }),
-      async onQueryStarted(arg, {dispatch, queryFulfilled}) {
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         dispatch(loggingInStarted());
         try {
           await queryFulfilled;
-        } finally {        
+        } finally {
           dispatch(loggingInFinished());
         }
       }
@@ -43,11 +43,30 @@ export const api = createApi({
     getUserData: build.query({
       query: () => '/auth/user-data/',
     }),
+    registerUserWallet: build.mutation({
+      query: ({ message, signature }) => ({
+        url: '/auth/register-wallet/',
+        method: 'POST',
+        body: { message, signature },
+      })
+    }),
+    getUserRules: build.query({
+      query: () => '/rules/',
+    }),
+    deleteRule: build.mutation({
+      query: (id) => ({
+        url: `/rules/${id}/`,
+        method: 'DELETE',
+      })
+    }),
   }),
 });
 
 export const {
   useLoginMutation,
   useLogoutMutation,
-  useGetUserDataQuery
+  useGetUserDataQuery,
+  useRegisterUserWalletMutation,
+  useGetUserRulesQuery,
+  useDeleteRuleMutation,
 } = api;

@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
 
-from steam_auth.models import User
+from steam_auth.models import User, Wallet
 
 
 class Game(models.Model):
@@ -19,8 +19,8 @@ class Game(models.Model):
     title = models.CharField(max_length=32)
     game = models.CharField(max_length=4, choices=GameTitle.choices, default=GameTitle.choices[0])
     rules = models.ForeignKey('Rules', on_delete=models.PROTECT, related_name='games')
-    host = models.ForeignKey(User, on_delete=models.CASCADE, related_name='hosted_games')
-    player2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='joined_games')
+    host = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='hosted_games')
+    player2 = models.ForeignKey(Wallet, on_delete=models.CASCADE, blank=True, null=True, related_name='joined_games')
     started = models.BooleanField(default=False)
     closed = models.BooleanField(default=False)
     dispute = models.BooleanField(default=False)

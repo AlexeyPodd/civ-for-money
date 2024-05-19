@@ -1,4 +1,5 @@
 import re
+from time import sleep
 
 from rest_framework import status
 from rest_framework.authtoken.models import Token
@@ -6,7 +7,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .models import User
+from game.web3.utils import recover_address
+from .models import User, Wallet
 from .steam_requests import validate_steam_login, get_steam_user_data
 
 
@@ -68,3 +70,19 @@ def get_user_data(request):
         'username': user_data['personaname'],
         'isStaff': request.user.is_staff,
     })
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def register_wallet(request):
+    address = recover_address(request.data['message'], request.data['signature'])
+
+    existed = Wallet.objects.filter(address=address).exists()
+    if existed:
+        wallet = Wallet.objects.get(address=address)
+        if wallet.owner != request.user:
+            return Response({'detail': 'This address is associated to another Steam account.'}, status=status.HTTP_403_FORBIDDEN)
+    else:
+        wallet = Wallet.objects.create(address=address, owner=request.user)
+
+    return Response({'address': address, 'uuid': wallet.owner.uuid, 'created': not existed})

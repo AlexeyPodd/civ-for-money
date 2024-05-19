@@ -1,31 +1,21 @@
 from server.settings import DUEL_ABI
 from .provider import web3
+import json
 
 
-class DuelSmartContractAPI:
+class DuelSmartContractViewAPI:
     def __init__(self, address):
         self.contract = web3.eth.contract(address=address, abi=DUEL_ABI)
+        self.__contract_views = self.__get_contract_views(DUEL_ABI)
 
-    @property
-    def arbiter(self):
-        return self.contract.functions.arbiter().call()
+    @staticmethod
+    def __get_contract_views(abi_string):
+        abi_list = json.loads(abi_string)
+        return [method['name'] for method in abi_list
+                if method['type'] == 'function' and method['stateMutability'] == 'view']
 
-    @property
-    def host(self):
-        return self.contract.functions.host().call()
+    def __getattr__(self, item):
+        if item not in self.__contract_views:
+            raise AttributeError(f"Contract does not have view function '{item}'")
 
-    @property
-    def player2(self):
-        return self.contract.functions.player2().call()
-
-    @property
-    def started(self):
-        return self.contract.functions.started().call()
-
-    @property
-    def closed(self):
-        return self.contract.functions.closed().call()
-
-    @property
-    def disagreement(self):
-        return self.contract.functions.disagreement().call()
+        return getattr(self.contract.functions, item)().call()

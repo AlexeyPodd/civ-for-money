@@ -111,13 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
-    ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ]
 }
@@ -154,13 +148,35 @@ STEAM_GET_PLAYER_SUMMARIES_URL = 'http://api.steampowered.com/ISteamUser/GetPlay
 
 # Web3 settings
 ALCHEMY_HTTP_ADDRESS = os.environ.get('ALCHEMY_HTTP_ADDRESS')
-DUEL_ABI = ('[{"inputs":[{"internalType":"address","name":"_arbiter","type":"address"},{"internalType":"address","name"'
-            ':"_beneficiary","type":"address"}],"stateMutability":"payable","type":"constructor"},{"anonymous":false,"i'
-            'nputs":[{"indexed":false,"internalType":"uint256","name":"","type":"uint256"}],"name":"Approved","type":"e'
-            'vent"},{"inputs":[],"name":"approve","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inpu'
-            'ts":[],"name":"arbiter","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability'
-            '":"view","type":"function"},{"inputs":[],"name":"beneficiary","outputs":[{"internalType":"address","name":'
-            '"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"depositor","outputs'
-            '":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"in'
-            'puts":[],"name":"isApproved","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability"'
-            ':"view","type":"function"}]')
+DUEL_ABI = ('[{"inputs": [{"internalType": "address", "name": "_arbiter", "type": "address"}, {"internalType": "uint256'
+            '", "name": "_playPeriod", "type": "uint256"}], "stateMutability": "payable", "type": "constructor"}, {"ano'
+            'nymous": false, "inputs": [], "name": "Cancel", "type": "event"}, {"anonymous": false, "inputs": [], "name'
+            '": "Disagreement", "type": "event"}, {"anonymous": false, "inputs": [], "name": "Draw", "type": "event"}, '
+            '{"anonymous": false, "inputs": [{"indexed": false, "internalType": "address", "name": "player2", "type": "'
+            'address"}], "name": "Joined", "type": "event"}, {"anonymous": false, "inputs": [], "name": "SlotFreed", "t'
+            'ype": "event"}, {"anonymous": false, "inputs": [{"indexed": false, "internalType": "address", "name": "pla'
+            'yer2", "type": "address"}], "name": "Start", "type": "event"}, {"anonymous": false, "inputs": [{"indexed":'
+            ' false, "internalType": "address", "name": "winner", "type": "address"}], "name": "Victory", "type": "even'
+            't"}, {"inputs": [], "name": "arbiter", "outputs": [{"internalType": "address", "name": "", "type": "addres'
+            's"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "bet", "outputs": [{"internal'
+            'Type": "uint256", "name": "", "type": "uint256"}], "stateMutability": "view", "type": "function"}, {"input'
+            's": [], "name": "cancel", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": '
+            '[], "name": "closed", "outputs": [{"internalType": "bool", "name": "", "type": "bool"}], "stateMutability"'
+            ': "view", "type": "function"}, {"inputs": [], "name": "disagreement", "outputs": [{"internalType": "bool",'
+            ' "name": "", "type": "bool"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "exc'
+            'ludePlayer2", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalT'
+            'ype": "address", "name": "_winner", "type": "address"}], "name": "forceAppointWinner", "outputs": [], "sta'
+            'teMutability": "nonpayable", "type": "function"}, {"inputs": [], "name": "forceDraw", "outputs": [], "stat'
+            'eMutability": "nonpayable", "type": "function"}, {"inputs": [], "name": "host", "outputs": [{"internalType'
+            '": "address", "name": "", "type": "address"}], "stateMutability": "view", "type": "function"}, {"inputs": '
+            '[], "name": "join", "outputs": [], "stateMutability": "payable", "type": "function"}, {"inputs": [], "name'
+            '": "playPeriod", "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}], "stateMutability'
+            '": "view", "type": "function"}, {"inputs": [], "name": "player2", "outputs": [{"internalType": "address", '
+            '"name": "", "type": "address"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "s'
+            'tart", "outputs": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [], "name": "starte'
+            'd", "outputs": [{"internalType": "bool", "name": "", "type": "bool"}], "stateMutability": "view", "type": '
+            '"function"}, {"inputs": [], "name": "timeStart", "outputs": [{"internalType": "uint256", "name": "", "type'
+            '": "uint256"}], "stateMutability": "view", "type": "function"}, {"inputs": [], "name": "voteForDraw", "out'
+            'puts": [], "stateMutability": "nonpayable", "type": "function"}, {"inputs": [{"internalType": "uint8", "na'
+            'me": "_place", "type": "uint8"}], "name": "voteForPlace", "outputs": [], "stateMutability": "nonpayable", '
+            '"type": "function"}]')

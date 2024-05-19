@@ -1,11 +1,13 @@
 import { Button, Flex, FormControl, FormLabel, Input, FormErrorMessage, Select, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Stack, Checkbox, Textarea } from "@chakra-ui/react";
+import { useEffect } from "react";
 import { useForm } from 'react-hook-form';
 
-export default function NewGameForm() {
+export default function NewGameForm({ onSubmit, rules, deleteRule, ruleIsDeleting, ruleIsDeleted }) {
   const fields = ['title', 'game', 'bet', 'betDenomination', 'playPeriod', 'playPeriodType', 'rules', 'rulesTitle', 'rulesDescription']
 
   const {
     register,
+    setValue,
     handleSubmit,
     watch,
     formState: { errors },
@@ -13,13 +15,39 @@ export default function NewGameForm() {
 
   const rulesAreNew = watch('rules', 'create') === 'create';
 
-  async function deploySmartContract(formData) {
-    console.log(formData);
+  let currentRule;
+  if (!rulesAreNew) {
+    for (let rule of rules) {
+      if (rule.id === watch('rules')) {
+        currentRule = rule;
+      }
+    }
   }
+
+  function setRule(event) {
+    const currentRuleID = Number(event.target.value);
+    for (let rule of rules) {
+      if (rule.id === currentRuleID) {
+        setValue('rulesTitle', rule.title);
+        setValue('rulesDescription', rule.description);
+        return;
+      }
+    }
+    setValue('rulesTitle', '');
+    setValue('rulesDescription', '');
+  }
+
+  useEffect(() => {
+    if (ruleIsDeleted) {
+      setValue('rules', 'create');
+      setValue('rulesTitle', '');
+      setValue('rulesDescription', '');
+    }
+  }, [ruleIsDeleted])
 
   return (
     <Flex justify='center'>
-      <form onSubmit={handleSubmit(deploySmartContract)}>
+      <form onSubmit={handleSubmit(onSubmit)}>
 
         <FormControl isRequired isInvalid={errors && errors['title']} my="20px">
           <FormLabel>Title</FormLabel>
@@ -38,7 +66,7 @@ export default function NewGameForm() {
         <Stack shouldWrapChildren direction='row' my="20px" w='100%'>
           <FormControl isRequired isInvalid={errors && errors['bet']}>
             <FormLabel>Bet</FormLabel>
-            <NumberInput defaultValue={0.0005} focusBorderColor='#48BB78'>
+            <NumberInput defaultValue={0.0005} min={0} focusBorderColor='#48BB78'>
               <NumberInputField {...register('bet')} />
               <NumberInputStepper>
                 <NumberIncrementStepper />
@@ -63,14 +91,14 @@ export default function NewGameForm() {
               <option value="27">GEther</option>
               <option value="30">TEther</option>
             </Select>
-            <FormErrorMessage>{errors['game']}</FormErrorMessage>
+            <FormErrorMessage>{errors['betDenomination']}</FormErrorMessage>
           </FormControl>
         </Stack>
 
         <Stack shouldWrapChildren direction='row' my="20px">
           <FormControl isRequired isInvalid={errors && errors['bet']}>
             <FormLabel>Game Duration</FormLabel>
-            <NumberInput defaultValue={1} focusBorderColor='#48BB78'>
+            <NumberInput min={0} defaultValue={1} focusBorderColor='#48BB78'>
               <NumberInputField {...register('playPeriod')} />
               <NumberInputStepper>
                 <NumberIncrementStepper />
@@ -92,17 +120,25 @@ export default function NewGameForm() {
 
         <FormControl isRequired isInvalid={errors && errors['rules']} my="20px">
           <FormLabel>Rules</FormLabel>
-          <Select {...register('rules')}>
+          <Select {...register('rules', { onChange: setRule })}>
             <option value="create">Create new</option>
-            <option value="1">pangea</option>
-            <option value="2">sqirmish</option>
-            <option value="3">islands</option>
+            {rules.map(rule => <option key={rule.id} value={rule.id}>{rule.title}</option>)}
           </Select>
           <FormErrorMessage>{errors['game']}</FormErrorMessage>
         </FormControl>
 
         {!rulesAreNew
-          && <Flex><Button size="xs" colorScheme="red" ml='auto'>Delete this rules</Button></Flex>
+          && <Flex>
+            <Button 
+            size="xs" 
+            colorScheme="red" 
+            ml='auto' 
+            onClick={() => deleteRule(watch('rules'))}
+            isLoading={ruleIsDeleting}
+            >
+              Delete this rules
+            </Button>
+          </Flex>
         }
 
         <FormControl isRequired isInvalid={errors && errors['rulesTitle']} my="20px">

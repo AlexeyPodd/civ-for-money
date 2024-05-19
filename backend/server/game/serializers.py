@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Rules
+from .models import Rules, Game
 
 
 class RulesSerializer(serializers.ModelSerializer):
@@ -9,3 +9,10 @@ class RulesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rules
         fields = ('id', 'title', 'description', 'creator')
+
+
+class GameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Game
+        fields = '__all__'
+
