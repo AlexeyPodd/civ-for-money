@@ -1,5 +1,4 @@
 import re
-from time import sleep
 
 from rest_framework import status
 from rest_framework.authtoken.models import Token

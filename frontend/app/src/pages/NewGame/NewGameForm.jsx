@@ -1,17 +1,38 @@
-import { Button, Flex, FormControl, FormLabel, Input, FormErrorMessage, Select, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Stack, Checkbox, Textarea } from "@chakra-ui/react";
+import { Button, Flex, FormControl, FormLabel, Input, FormErrorMessage, Select, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Stack, Textarea, Text } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useForm } from 'react-hook-form';
 
-export default function NewGameForm({ onSubmit, rules, deleteRule, ruleIsDeleting, ruleIsDeleted }) {
-  const fields = ['title', 'game', 'bet', 'betDenomination', 'playPeriod', 'playPeriodType', 'rules', 'rulesTitle', 'rulesDescription']
+export default function NewGameForm({
+  onSubmit,
+  rules,
+  deleteRule,
+  ruleIsDeleting,
+  ruleIsDeleted,
+  gameTypes,
+  responseErrors,
+}) {
+
+  const fieldNames = [
+    'title',
+    'game',
+    'bet',
+    'betDenomination',
+    'playPeriod',
+    'playPeriodType',
+    'rules',
+    'rulesTitle',
+    'rulesDescription',
+  ]
 
   const {
     register,
     setValue,
+    setError,
+    clearErrors,
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm({});
+  } = useForm({ defaultValues: { betDenomination: '18' } });
 
   const rulesAreNew = watch('rules', 'create') === 'create';
 
@@ -25,6 +46,9 @@ export default function NewGameForm({ onSubmit, rules, deleteRule, ruleIsDeletin
   }
 
   function setRule(event) {
+    clearErrors("rulesTitle");
+    clearErrors("rulesDescription");
+
     const currentRuleID = Number(event.target.value);
     for (let rule of rules) {
       if (rule.id === currentRuleID) {
@@ -43,42 +67,52 @@ export default function NewGameForm({ onSubmit, rules, deleteRule, ruleIsDeletin
       setValue('rulesTitle', '');
       setValue('rulesDescription', '');
     }
-  }, [ruleIsDeleted])
+  }, [ruleIsDeleted]);
+
+  useEffect(() => {
+    responseErrors.serverError && setError('root.serverError', { message: responseErrors.serverError })
+    for (let fieldName of fieldNames) {
+      if (responseErrors[fieldName]) {
+        setError(fieldName, { message: responseErrors[fieldName] });
+      } 
+    }
+  }, [responseErrors]);
 
   return (
     <Flex justify='center'>
       <form onSubmit={handleSubmit(onSubmit)}>
+        {errors && errors.root && errors.root.serverError && <Flex justify='center' color='red' bg='red.100'>{errors.root.serverError.message}</Flex>}
 
-        <FormControl isRequired isInvalid={errors && errors['title']} my="20px">
+        <FormControl isRequired isInvalid={errors && errors[fieldNames[0]]} my="20px">
           <FormLabel>Title</FormLabel>
-          <Input {...register('title')} focusBorderColor='#48BB78' />
-          <FormErrorMessage>{errors['title']}</FormErrorMessage>
+          <Input {...register(fieldNames[0])} focusBorderColor='#48BB78' />
+          <FormErrorMessage>{errors[fieldNames[0]]?.message}</FormErrorMessage>
         </FormControl>
 
-        <FormControl isRequired isInvalid={errors && errors['game']} my="20px">
+        <FormControl isRequired isInvalid={errors && errors[fieldNames[1]]} my="20px">
           <FormLabel>Game</FormLabel>
-          <Select {...register('game')}>
-            <option value="CIV5" >Civilization 5</option>
+          <Select {...register(fieldNames[1])}>
+            {gameTypes.map(gameType => <option value={gameType[0]} key={gameType[0]} >{gameType[1]}</option>)}
           </Select>
-          <FormErrorMessage>{errors['game']}</FormErrorMessage>
+          <FormErrorMessage>{errors[fieldNames[1]]?.message}</FormErrorMessage>
         </FormControl>
 
         <Stack shouldWrapChildren direction='row' my="20px" w='100%'>
-          <FormControl isRequired isInvalid={errors && errors['bet']}>
+          <FormControl isRequired isInvalid={errors && errors[fieldNames[2]]}>
             <FormLabel>Bet</FormLabel>
             <NumberInput defaultValue={0.0005} min={0} focusBorderColor='#48BB78'>
-              <NumberInputField {...register('bet')} />
+              <NumberInputField {...register(fieldNames[2])} />
               <NumberInputStepper>
                 <NumberIncrementStepper />
                 <NumberDecrementStepper />
               </NumberInputStepper>
             </NumberInput>
-            <FormErrorMessage>{errors['title']}</FormErrorMessage>
+            <FormErrorMessage>{errors[fieldNames[2]]?.message}</FormErrorMessage>
           </FormControl>
 
           <FormControl>
             <FormLabel>Denomination</FormLabel>
-            <Select {...register('betDenomination')}>
+            <Select {...register(fieldNames[3])}>
               <option value="0">Wei</option>
               <option value="3">Kwei</option>
               <option value="6">Mwei</option>
@@ -91,7 +125,7 @@ export default function NewGameForm({ onSubmit, rules, deleteRule, ruleIsDeletin
               <option value="27">GEther</option>
               <option value="30">TEther</option>
             </Select>
-            <FormErrorMessage>{errors['betDenomination']}</FormErrorMessage>
+            <FormErrorMessage>{errors[fieldNames[3]]?.message}</FormErrorMessage>
           </FormControl>
         </Stack>
 
@@ -99,55 +133,55 @@ export default function NewGameForm({ onSubmit, rules, deleteRule, ruleIsDeletin
           <FormControl isRequired isInvalid={errors && errors['bet']}>
             <FormLabel>Game Duration</FormLabel>
             <NumberInput min={0} defaultValue={1} focusBorderColor='#48BB78'>
-              <NumberInputField {...register('playPeriod')} />
+              <NumberInputField {...register(fieldNames[4])} />
               <NumberInputStepper>
                 <NumberIncrementStepper />
                 <NumberDecrementStepper />
               </NumberInputStepper>
             </NumberInput>
-            <FormErrorMessage>{errors['playPeriod']}</FormErrorMessage>
+            <FormErrorMessage>{errors[fieldNames[4]]?.message}</FormErrorMessage>
           </FormControl>
 
           <FormControl>
             <FormLabel>Days / Hours</FormLabel>
-            <Select {...register('playPeriodType')}>
+            <Select {...register(fieldNames[5])}>
               <option value="3600">hour(s)</option>
               <option value="86400">day(s)</option>
             </Select>
-            <FormErrorMessage>{errors['game']}</FormErrorMessage>
+            <FormErrorMessage>{errors[fieldNames[5]]?.message}</FormErrorMessage>
           </FormControl>
         </Stack>
 
-        <FormControl isRequired isInvalid={errors && errors['rules']} my="20px">
+        <FormControl isRequired isInvalid={errors && errors[fieldNames[6]]} my="20px">
           <FormLabel>Rules</FormLabel>
-          <Select {...register('rules', { onChange: setRule })}>
+          <Select {...register(fieldNames[6], { onChange: setRule })}>
             <option value="create">Create new</option>
             {rules.map(rule => <option key={rule.id} value={rule.id}>{rule.title}</option>)}
           </Select>
-          <FormErrorMessage>{errors['game']}</FormErrorMessage>
+          <FormErrorMessage>{errors[fieldNames[6]]?.message}</FormErrorMessage>
         </FormControl>
 
         {!rulesAreNew
           && <Flex>
-            <Button 
-            size="xs" 
-            colorScheme="red" 
-            ml='auto' 
-            onClick={() => deleteRule(watch('rules'))}
-            isLoading={ruleIsDeleting}
+            <Button
+              size="xs"
+              colorScheme="red"
+              ml='auto'
+              onClick={() => deleteRule(watch(fieldNames[6]))}
+              isLoading={ruleIsDeleting}
             >
               Delete this rules
             </Button>
           </Flex>
         }
 
-        <FormControl isRequired isInvalid={errors && errors['rulesTitle']} my="20px">
-          <Input {...register('rulesTitle')} focusBorderColor='#48BB78' size='sm' placeholder="Rules Title" variant="flushed" />
-          <FormErrorMessage>{errors['rulesTitle']}</FormErrorMessage>
+        <FormControl isRequired isInvalid={errors && errors[fieldNames[7]]} my="20px">
+          <Input {...register(fieldNames[7])} focusBorderColor='#48BB78' size='sm' placeholder="Rules Title" variant="flushed" />
+          <FormErrorMessage>{errors[fieldNames[7]]?.message}</FormErrorMessage>
         </FormControl>
-        <FormControl isRequired isInvalid={errors && errors['rulesDescription']} my="20px">
-          <Textarea {...register('rulesDescription')} focusBorderColor='#48BB78' size='sm' placeholder="Rules description..." />
-          <FormErrorMessage>{errors['rulesDescription']}</FormErrorMessage>
+        <FormControl isRequired isInvalid={errors && errors[fieldNames[8]]} my="20px">
+          <Textarea {...register(fieldNames[8])} focusBorderColor='#48BB78' size='sm' placeholder="Rules description..." />
+          <FormErrorMessage>{errors[fieldNames[8]]?.message}</FormErrorMessage>
         </FormControl>
 
         <Button

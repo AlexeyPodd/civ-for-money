@@ -1,17 +1,21 @@
-from rest_framework import mixins
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.viewsets import GenericViewSet
+from rest_framework import mixins, status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
 from .models import Rules, Game
 from .permissions import RulesPermission
 from .serializers import RulesSerializer, GameSerializer
 
 
-class RulesViewSet(mixins.CreateModelMixin,
-                   mixins.RetrieveModelMixin,
-                   mixins.DestroyModelMixin,
-                   mixins.ListModelMixin,
-                   GenericViewSet):
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_game_types(request):
+    return Response(Game.GameTitle.choices)
+
+
+class RulesViewSet(ModelViewSet):
     serializer_class = RulesSerializer
     permission_classes = (RulesPermission,)
 

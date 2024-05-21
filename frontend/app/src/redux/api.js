@@ -53,11 +53,28 @@ export const api = createApi({
     getUserRules: build.query({
       query: () => '/rules/',
     }),
+    createRule: build.mutation({
+      query: ({ title, description }) => ({
+        url: '/rules/',
+        method: 'POST',
+        body: { title, description },
+      })
+    }),
+    updateRule: build.mutation({
+      query: ({id, title, description}) => ({
+        url: `/rules/${id}/`,
+        method: 'PUT',
+        body: { title, description },
+      })
+    }),
     deleteRule: build.mutation({
       query: (id) => ({
         url: `/rules/${id}/`,
         method: 'DELETE',
       })
+    }),
+    getGameTypes: build.query({
+      query: () => '/game-types/',
     }),
   }),
 });
@@ -68,5 +85,8 @@ export const {
   useGetUserDataQuery,
   useRegisterUserWalletMutation,
   useGetUserRulesQuery,
+  useCreateRuleMutation,
+  useUpdateRuleMutation,
   useDeleteRuleMutation,
+  useGetGameTypesQuery,
 } = api;
