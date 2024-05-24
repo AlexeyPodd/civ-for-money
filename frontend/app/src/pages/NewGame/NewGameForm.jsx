@@ -10,6 +10,8 @@ export default function NewGameForm({
   ruleIsDeleted,
   gameTypes,
   responseErrors,
+  balanceWei,
+  currentRule,
 }) {
 
   const fieldNames = [
@@ -27,6 +29,7 @@ export default function NewGameForm({
   const {
     register,
     setValue,
+    getValues,
     setError,
     clearErrors,
     handleSubmit,
@@ -34,16 +37,12 @@ export default function NewGameForm({
     formState: { errors },
   } = useForm({ defaultValues: { betDenomination: '18' } });
 
-  const rulesAreNew = watch('rules', 'create') === 'create';
-
-  let currentRule;
-  if (!rulesAreNew) {
-    for (let rule of rules) {
-      if (rule.id === watch('rules')) {
-        currentRule = rule;
-      }
-    }
+  function validateBetAmount(value) {
+    const bet = value * 10 ** getValues()[fieldNames[3]];
+    return bet <= balanceWei || 'Not enough money on balance.';
   }
+
+  const rulesAreNew = watch('rules', 'create') === 'create';
 
   function setRule(event) {
     clearErrors("rulesTitle");
@@ -62,6 +61,13 @@ export default function NewGameForm({
   }
 
   useEffect(() => {
+    setValue('rules', currentRule.id);
+    setValue('rulesTitle', currentRule.title);
+    setValue('rulesDescription', currentRule.description);
+
+  }, [currentRule])
+
+  useEffect(() => {
     if (ruleIsDeleted) {
       setValue('rules', 'create');
       setValue('rulesTitle', '');
@@ -74,14 +80,17 @@ export default function NewGameForm({
     for (let fieldName of fieldNames) {
       if (responseErrors[fieldName]) {
         setError(fieldName, { message: responseErrors[fieldName] });
-      } 
+      }
     }
   }, [responseErrors]);
 
   return (
     <Flex justify='center'>
       <form onSubmit={handleSubmit(onSubmit)}>
-        {errors && errors.root && errors.root.serverError && <Flex justify='center' color='red' bg='red.100'>{errors.root.serverError.message}</Flex>}
+        {errors && errors.root && errors.root.serverError
+          && <Flex justify='center' color='red' bg='red.100'>
+            {errors.root.serverError.message}
+          </Flex>}
 
         <FormControl isRequired isInvalid={errors && errors[fieldNames[0]]} my="20px">
           <FormLabel>Title</FormLabel>
@@ -101,7 +110,11 @@ export default function NewGameForm({
           <FormControl isRequired isInvalid={errors && errors[fieldNames[2]]}>
             <FormLabel>Bet</FormLabel>
             <NumberInput defaultValue={0.0005} min={0} focusBorderColor='#48BB78'>
-              <NumberInputField {...register(fieldNames[2])} />
+              <NumberInputField {...register(fieldNames[2], {
+                validate: {
+                  balanceSufficient: validateBetAmount,
+                }
+              })} />
               <NumberInputStepper>
                 <NumberIncrementStepper />
                 <NumberDecrementStepper />
@@ -130,7 +143,7 @@ export default function NewGameForm({
         </Stack>
 
         <Stack shouldWrapChildren direction='row' my="20px">
-          <FormControl isRequired isInvalid={errors && errors['bet']}>
+          <FormControl isRequired isInvalid={errors && errors[fieldNames[4]]}>
             <FormLabel>Game Duration</FormLabel>
             <NumberInput min={0} defaultValue={1} focusBorderColor='#48BB78'>
               <NumberInputField {...register(fieldNames[4])} />

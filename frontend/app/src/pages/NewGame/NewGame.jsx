@@ -8,6 +8,8 @@ export default function NewGame({
   ruleIsDeleted,
   gameTypes,
   responseErrors,
+  balanceWei,
+  currentRule,
 }) {
   return (
     <NewGameForm
@@ -18,6 +20,8 @@ export default function NewGame({
       ruleIsDeleted={ruleIsDeleted}
       gameTypes={gameTypes}
       responseErrors={responseErrors}
+      balanceWei={balanceWei}
+      currentRule={currentRule}
     />
   )
 }
