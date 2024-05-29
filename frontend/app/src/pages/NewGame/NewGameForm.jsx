@@ -11,7 +11,7 @@ export default function NewGameForm({
   gameTypes,
   responseErrors,
   balanceWei,
-  currentRule,
+  chosenRuleID,
 }) {
 
   const fieldNames = [
@@ -37,14 +37,19 @@ export default function NewGameForm({
     formState: { errors },
   } = useForm({ defaultValues: { betDenomination: '18' } });
 
-  function validateBetAmount(value) {
-    const bet = value * 10 ** getValues()[fieldNames[3]];
+  function validateBalanceSufficient(value) {
+    const bet = Math.floor(value * 10 ** getValues()[fieldNames[3]]);
     return bet <= balanceWei || 'Not enough money on balance.';
+  }
+
+  function validateBetIsBiggerThenZero(value) {
+    const bet = Math.floor(value * 10 ** getValues()[fieldNames[3]]);
+    return bet > 0 || 'Your bet can not be less then 1 wei.';
   }
 
   const rulesAreNew = watch('rules', 'create') === 'create';
 
-  function setRule(event) {
+  function setRuleData(event) {
     clearErrors("rulesTitle");
     clearErrors("rulesDescription");
 
@@ -61,11 +66,13 @@ export default function NewGameForm({
   }
 
   useEffect(() => {
-    setValue('rules', currentRule.id);
-    setValue('rulesTitle', currentRule.title);
-    setValue('rulesDescription', currentRule.description);
-
-  }, [currentRule])
+    if (chosenRuleID) {
+      const chosenRule = rules.find(r => r.id === chosenRuleID);
+      setValue('rules', chosenRuleID);      
+      setValue('rulesTitle', chosenRule.title);
+      setValue('rulesDescription', chosenRule.description);
+    }
+  }, [chosenRuleID])
 
   useEffect(() => {
     if (ruleIsDeleted) {
@@ -112,7 +119,8 @@ export default function NewGameForm({
             <NumberInput defaultValue={0.0005} min={0} focusBorderColor='#48BB78'>
               <NumberInputField {...register(fieldNames[2], {
                 validate: {
-                  balanceSufficient: validateBetAmount,
+                  balanceSufficient: validateBalanceSufficient,
+                  betIsBiggerThenZero: validateBetIsBiggerThenZero,
                 }
               })} />
               <NumberInputStepper>
@@ -146,7 +154,7 @@ export default function NewGameForm({
           <FormControl isRequired isInvalid={errors && errors[fieldNames[4]]}>
             <FormLabel>Game Duration</FormLabel>
             <NumberInput min={0} defaultValue={1} focusBorderColor='#48BB78'>
-              <NumberInputField {...register(fieldNames[4])} />
+              <NumberInputField {...register(fieldNames[4], {min: 1})} />
               <NumberInputStepper>
                 <NumberIncrementStepper />
                 <NumberDecrementStepper />
@@ -167,7 +175,7 @@ export default function NewGameForm({
 
         <FormControl isRequired isInvalid={errors && errors[fieldNames[6]]} my="20px">
           <FormLabel>Rules</FormLabel>
-          <Select {...register(fieldNames[6], { onChange: setRule })}>
+          <Select {...register(fieldNames[6], { onChange: setRuleData })}>
             <option value="create">Create new</option>
             {rules.map(rule => <option key={rule.id} value={rule.id}>{rule.title}</option>)}
           </Select>

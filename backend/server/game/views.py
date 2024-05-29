@@ -21,7 +21,7 @@ class RulesViewSet(ModelViewSet):
 
     def get_queryset(self):
         queryset = Rules.objects.all()
-        if self.action == 'list':
+        if self.action in ['list', 'destroy', 'update']:
             queryset = queryset.filter(creator=self.request.user, deleted=False)
 
         return queryset
@@ -29,6 +29,17 @@ class RulesViewSet(ModelViewSet):
     def perform_destroy(self, instance):
         instance.deleted = True
         instance.save()
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.games.exists():
+            return self.create(request, *args, **kwargs)
+
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        return Response(serializer.data)
 
 
 class GameViewSet(mixins.CreateModelMixin,

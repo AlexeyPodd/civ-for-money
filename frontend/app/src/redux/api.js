@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { loggingInFinished, loggingInStarted } from './authSlice';
+import { ruleDeleted } from './rulesSlice';
 
 export const api = createApi({
   baseQuery: fetchBaseQuery({
@@ -71,7 +72,15 @@ export const api = createApi({
       query: (id) => ({
         url: `/rules/${id}/`,
         method: 'DELETE',
-      })
+      }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(ruleDeleted({id: Number(arg)}));
+        } catch(err) {
+          console.error(err);
+        }
+      }
     }),
     getGameTypes: build.query({
       query: () => '/game-types/',

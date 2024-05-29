@@ -7,17 +7,23 @@ import Preloader from "../../components/Preloader/Preloader"
 import SomeError from "../../components/SomeError/SomeError";
 import { useContext, useEffect, useState } from "react";
 import { SignerContext } from "../../context/SignerContext";
+import { useSelector } from "react-redux";
+import { selectRules } from "../../redux/rulesSlice";
+import deploy from "../../ethereumAPI/contractDeploy";
 
 function NewGameContainer() {
-  const { data: rules, error: gettingRulesListError, isLoading: isGettingRulesList,isFetching: isFetchingRulesList, refetch } = useGetUserRulesQuery();
+  // server api
+  const { error: gettingRulesListError, isLoading: isGettingRulesList } = useGetUserRulesQuery();
   const [deleteRule, { isSuccess: ruleIsDeleted, isLoading: ruleIsDeleting, error: ruleDeletingError, reset: resetDeleteMutation }] = useDeleteRuleMutation();
   const { data: gameTypes, error: gettingGameTypesError, isLoading: isGettingGameTypes } = useGetGameTypesQuery();
-  const [updateRule, { isSuccess: ruleIsUpdated, reset: resetUpdateMutation }] = useUpdateRuleMutation();
-  const [createRule, { isSuccess: ruleIsCreated, reset: resetCreateMutation }] = useCreateRuleMutation();
+  const [updateRule] = useUpdateRuleMutation();
+  const [createRule] = useCreateRuleMutation();
+
+  const rules = useSelector(selectRules);
 
   const [responseErrors, setResponseErrors] = useState({});
-  const [createdRule, setCreatedRule] = useState({id: 'create', title: '', description: ''});
-  const [currentRule, setCurrentRule] = useState({id: 'create', title: '', description: ''});
+
+  const [chosenRuleID, setChosenRuleID] = useState();
 
   const { signer } = useContext(SignerContext);
   const [balanceWei, setBalanceWei] = useState();
@@ -29,37 +35,6 @@ function NewGameContainer() {
     getBalance();
   }, [signer]);
 
-  // --- effects for resetting api data after using it -----
-  useEffect(() => {
-    if (ruleIsDeleted) {
-      resetDeleteMutation();
-      refetch();
-    }
-  }, [ruleIsDeleted, resetDeleteMutation, refetch]);
-
-  useEffect(() => {
-    if (ruleIsUpdated) {
-      resetUpdateMutation();
-      refetch();
-    }
-  }, [ruleIsUpdated, resetUpdateMutation, refetch]);
-
-  useEffect(() => {
-    if (ruleIsCreated) {
-      resetCreateMutation();
-      refetch();
-    }
-  }, [ruleIsCreated, resetCreateMutation, refetch]);
-  // ---------------------------------------------------------
-
-  // effect for choosing created rule after refetch rules list from server
-  useEffect(() => {
-    if (!isFetchingRulesList && rules && createdRule.id != 'create' && rules.some(r => r.id === createdRule.id)) {
-      setCurrentRule(createdRule);
-    }
-  }, [isFetchingRulesList, rules, createdRule]);
-
-
   if (isGettingRulesList || isGettingGameTypes) return <Preloader />
   if (gettingRulesListError) return <SomeError error={gettingRulesListError} />
   if (ruleDeletingError) return <SomeError error={ruleDeletingError} />
@@ -68,16 +43,34 @@ function NewGameContainer() {
     return <SomeError error="Server error: no game types" />
   }
 
+  // main submit function
   async function createGame(formData) {
     // managing rules
     try {
       const ruleData = await syncRule(formData);
-      setCreatedRule(ruleData);
+      setChosenRuleID(ruleData.id);
     }
     catch (err) {
       setRulesResponseErrors(err);
       return;
     }
+
+    // deploying smart contract
+    try {
+      const contract = await deploy(
+        signer,
+        import.meta.env.VITE_ARBITER_ADDRESS,
+        formData.playPeriod * formData.playPeriodType,
+        formData.bet * 10 ** formData.betDenomination,
+      );
+      await contract.waitForDeployment();
+    }
+    catch (err) {
+      console.error(err);
+      return;
+    }
+
+    console.log(await contract.getAddress());
 
     console.log('continuing creating game process');
   }
@@ -109,11 +102,11 @@ function NewGameContainer() {
       }).unwrap();
     }
 
-    return new Promise((resolve, reject) => resolve({ 
-      id: formData.rules,
+    return new Promise((resolve, reject) => resolve({
+      id: Number(formData.rules),
       title: FormData.rulesTitle,
       description: formData.rulesDescription,
-      }));
+    }));
   }
 
   function setRulesResponseErrors(err) {
@@ -133,8 +126,8 @@ function NewGameContainer() {
     gameTypes={gameTypes}
     responseErrors={responseErrors}
     balanceWei={balanceWei}
-    currentRule={currentRule}
+    chosenRuleID={chosenRuleID}
   />
 }
 
-export default compose(withLoginOffer)(NewGameContainer);
+export default compose(withLoginOffer, withConnectWalletOffer)(NewGameContainer);

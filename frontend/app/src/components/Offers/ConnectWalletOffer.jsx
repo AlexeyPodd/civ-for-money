@@ -5,7 +5,7 @@ export default function ConnectWalletOffer() {
     <Container maxWidth="2xl" mt='25vh'>
       <Card align='center'>
         <CardHeader>
-          <Heading as="p">Please Connect Wallet</Heading>
+          <Heading as="p">Please Connect Your Wallet</Heading>
         </CardHeader>
         <CardBody>
           <Text>Please connect your wallet to be able to interact with blockchain.</Text>
