@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.24;
 
-contract Duels {
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+
+contract Duels is Initializable {
   enum ResultVote { NotVoted, First, Second, Draw }
 
   address public arbiter;
-  uint8 commissionPercent;
-  uint minimalBet;
+  uint8 public commissionPercent;
+  uint public minimalBet;
 
   struct Game {
     address host;
@@ -23,6 +25,7 @@ contract Duels {
 
   Game[] public games;
 
+  event Created(uint id);
   event Joined(uint id, address player2);
   event SlotFreed(uint id);
   event Cancel(uint id);
@@ -31,15 +34,15 @@ contract Duels {
   event Draw(uint id);
   event Disagreement(uint id);
 
-  constructor(uint _minimalBet, uint8 _commissionPercent) {
+  function initialize(uint _minimalBet, uint8 _commissionPercent) public initializer {
+    require(_commissionPercent <= 100, "Procent can not be greater then 100");
     arbiter = msg.sender;
     commissionPercent = _commissionPercent;
     minimalBet = _minimalBet;
   }
 
-  function createGame(uint _playPeriod) external payable returns(uint gameIndex) {
+  function createGame(uint _playPeriod) external payable {
     require(msg.value >= minimalBet, 'Your bet is too small');
-    gameIndex = games.length;
     games.push(Game(
       msg.sender,
       address(0), 
@@ -52,6 +55,7 @@ contract Duels {
       ResultVote.NotVoted,
       ResultVote.NotVoted
     ));
+    emit Created(games.length-1);
   }
 
   function join(uint _gameIndex) external payable {
@@ -110,9 +114,8 @@ contract Duels {
 
   function voteResult(uint _gameIndex, ResultVote _place) external {
     require(games.length > _gameIndex, "Game was not created yet"); 
-    require(uint8(_place) == 1 
-      || uint8(_place) == 2 
-      || uint8(_place) == 3,
+    require(
+      _place == ResultVote.First || _place == ResultVote.Second || _place == ResultVote.Draw,
       "Invalid vote value"
     );
     Game memory game = games[_gameIndex];
@@ -213,6 +216,17 @@ contract Duels {
 
     games[_gameIndex].closed = true;
     emit Draw(_gameIndex);
+  }
+
+  function setArbiter(address _arbiter) external onlyArbiter {
+    arbiter = _arbiter;
+  }
+  function setMinimalBet(uint _minimalBet) external onlyArbiter {
+    minimalBet = _minimalBet;
+  }
+  function setCommissionPercent(uint8 _commissionPercent) public onlyArbiter {
+    require(_commissionPercent <= 100, "Procent can not be greater then 100");
+    commissionPercent = _commissionPercent;
   }
 
   modifier onlyArbiter {

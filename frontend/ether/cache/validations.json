@@ -1,0 +1,982 @@
+{
+  "version": "3.4",
+  "log": [
+    {
+      "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:Initializable": {
+        "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:56",
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_struct(InitializableStorage)10_storage": {
+              "label": "struct Initializable.InitializableStorage",
+              "members": [
+                {
+                  "label": "_initialized",
+                  "type": "t_uint64",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "_initializing",
+                  "type": "t_bool",
+                  "offset": 8,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            },
+            "t_uint64": {
+              "label": "uint64",
+              "numberOfBytes": "8"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {
+            "erc7201:openzeppelin.storage.Initializable": [
+              {
+                "contract": "Initializable",
+                "label": "_initialized",
+                "type": "t_uint64",
+                "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "contract": "Initializable",
+                "label": "_initializing",
+                "type": "t_bool",
+                "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73",
+                "offset": 8,
+                "slot": "0"
+              }
+            ]
+          }
+        },
+        "solcVersion": "0.8.24"
+      },
+      "contracts/Duels.sol:Duels": {
+        "src": "contracts/Duels.sol:6",
+        "version": {
+          "withMetadata": "1d3427b482843237855f7706369976ecf479d0d42142616e049689a2cc8d04d4",
+          "withoutMetadata": "dd243be63213c932434c99588762a6d8a8f0eb744c0d5e1a15233f850cb9f614",
+          "linkedWithoutMetadata": "dd243be63213c932434c99588762a6d8a8f0eb744c0d5e1a15233f850cb9f614"
+        },
+        "inherit": [
+          "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:Initializable"
+        ],
+        "libraries": [],
+        "methods": [
+          "initialize(uint256,uint8)",
+          "createGame(uint256)",
+          "join(uint256)",
+          "excludePlayer2(uint256)",
+          "cancel(uint256)",
+          "start(uint256)",
+          "voteResult(uint256,uint8)",
+          "forceAppointWinner(uint256,address)",
+          "forceDraw(uint256)",
+          "setArbiter(address)",
+          "setMinimalBet(uint256)",
+          "setCommissionPercent(uint8)"
+        ],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [
+            {
+              "label": "arbiter",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Duels",
+              "src": "contracts/Duels.sol:9"
+            },
+            {
+              "label": "commissionPercent",
+              "offset": 20,
+              "slot": "0",
+              "type": "t_uint8",
+              "contract": "Duels",
+              "src": "contracts/Duels.sol:10"
+            },
+            {
+              "label": "minimalBet",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_uint256",
+              "contract": "Duels",
+              "src": "contracts/Duels.sol:11"
+            },
+            {
+              "label": "games",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_array(t_struct(Game)292_storage)dyn_storage",
+              "contract": "Duels",
+              "src": "contracts/Duels.sol:26"
+            }
+          ],
+          "types": {
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_struct(InitializableStorage)10_storage": {
+              "label": "struct Initializable.InitializableStorage",
+              "members": [
+                {
+                  "label": "_initialized",
+                  "type": "t_uint64",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "_initializing",
+                  "type": "t_bool",
+                  "offset": 8,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            },
+            "t_uint64": {
+              "label": "uint64",
+              "numberOfBytes": "8"
+            },
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_array(t_struct(Game)292_storage)dyn_storage": {
+              "label": "struct Duels.Game[]",
+              "numberOfBytes": "32"
+            },
+            "t_enum(ResultVote)263": {
+              "label": "enum Duels.ResultVote",
+              "members": [
+                "NotVoted",
+                "First",
+                "Second",
+                "Draw"
+              ],
+              "numberOfBytes": "1"
+            },
+            "t_struct(Game)292_storage": {
+              "label": "struct Duels.Game",
+              "members": [
+                {
+                  "label": "host",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "player2",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "bet",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "timeStart",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "playPeriod",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "4"
+                },
+                {
+                  "label": "started",
+                  "type": "t_bool",
+                  "offset": 0,
+                  "slot": "5"
+                },
+                {
+                  "label": "closed",
+                  "type": "t_bool",
+                  "offset": 1,
+                  "slot": "5"
+                },
+                {
+                  "label": "disagreement",
+                  "type": "t_bool",
+                  "offset": 2,
+                  "slot": "5"
+                },
+                {
+                  "label": "hostVote",
+                  "type": "t_enum(ResultVote)263",
+                  "offset": 3,
+                  "slot": "5"
+                },
+                {
+                  "label": "player2Vote",
+                  "type": "t_enum(ResultVote)263",
+                  "offset": 4,
+                  "slot": "5"
+                }
+              ],
+              "numberOfBytes": "192"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            },
+            "t_uint8": {
+              "label": "uint8",
+              "numberOfBytes": "1"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true,
+          "namespaces": {
+            "erc7201:openzeppelin.storage.Initializable": [
+              {
+                "contract": "Initializable",
+                "label": "_initialized",
+                "type": "t_uint64",
+                "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "contract": "Initializable",
+                "label": "_initializing",
+                "type": "t_bool",
+                "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73",
+                "offset": 8,
+                "slot": "0"
+              }
+            ]
+          }
+        },
+        "solcVersion": "0.8.24"
+      }
+    },
+    {
+      "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:Initializable": {
+        "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:56",
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_struct(InitializableStorage)10_storage": {
+              "label": "struct Initializable.InitializableStorage",
+              "members": [
+                {
+                  "label": "_initialized",
+                  "type": "t_uint64",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "_initializing",
+                  "type": "t_bool",
+                  "offset": 8,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            },
+            "t_uint64": {
+              "label": "uint64",
+              "numberOfBytes": "8"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {
+            "erc7201:openzeppelin.storage.Initializable": [
+              {
+                "contract": "Initializable",
+                "label": "_initialized",
+                "type": "t_uint64",
+                "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "contract": "Initializable",
+                "label": "_initializing",
+                "type": "t_bool",
+                "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73",
+                "offset": 8,
+                "slot": "0"
+              }
+            ]
+          }
+        },
+        "solcVersion": "0.8.24"
+      },
+      "contracts/Duels.sol:Duels": {
+        "src": "contracts/Duels.sol:6",
+        "version": {
+          "withMetadata": "eb3f6cbc6874e8f6aca888ce9f9ee64725b33baeefe55b6a700161ba6a1a709c",
+          "withoutMetadata": "5e71b36e29cdee3097a8b0fafdc45ad402cef741ec8fafeb3243701a7a6690ff",
+          "linkedWithoutMetadata": "5e71b36e29cdee3097a8b0fafdc45ad402cef741ec8fafeb3243701a7a6690ff"
+        },
+        "inherit": [
+          "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:Initializable"
+        ],
+        "libraries": [],
+        "methods": [
+          "initialize(uint256,uint8)",
+          "createGame(uint256)",
+          "join(uint256)",
+          "excludePlayer2(uint256)",
+          "cancel(uint256)",
+          "start(uint256)",
+          "voteResult(uint256,uint8)",
+          "forceAppointWinner(uint256,address)",
+          "forceDraw(uint256)",
+          "setArbiter(address)",
+          "setMinimalBet(uint256)",
+          "setCommissionPercent(uint8)"
+        ],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [
+            {
+              "label": "arbiter",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Duels",
+              "src": "contracts/Duels.sol:9"
+            },
+            {
+              "label": "commissionPercent",
+              "offset": 20,
+              "slot": "0",
+              "type": "t_uint8",
+              "contract": "Duels",
+              "src": "contracts/Duels.sol:10"
+            },
+            {
+              "label": "minimalBet",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_uint256",
+              "contract": "Duels",
+              "src": "contracts/Duels.sol:11"
+            },
+            {
+              "label": "games",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_array(t_struct(Game)292_storage)dyn_storage",
+              "contract": "Duels",
+              "src": "contracts/Duels.sol:26"
+            }
+          ],
+          "types": {
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_struct(InitializableStorage)10_storage": {
+              "label": "struct Initializable.InitializableStorage",
+              "members": [
+                {
+                  "label": "_initialized",
+                  "type": "t_uint64",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "_initializing",
+                  "type": "t_bool",
+                  "offset": 8,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            },
+            "t_uint64": {
+              "label": "uint64",
+              "numberOfBytes": "8"
+            },
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_array(t_struct(Game)292_storage)dyn_storage": {
+              "label": "struct Duels.Game[]",
+              "numberOfBytes": "32"
+            },
+            "t_enum(ResultVote)263": {
+              "label": "enum Duels.ResultVote",
+              "members": [
+                "NotVoted",
+                "First",
+                "Second",
+                "Draw"
+              ],
+              "numberOfBytes": "1"
+            },
+            "t_struct(Game)292_storage": {
+              "label": "struct Duels.Game",
+              "members": [
+                {
+                  "label": "host",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "player2",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "bet",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "timeStart",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "playPeriod",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "4"
+                },
+                {
+                  "label": "started",
+                  "type": "t_bool",
+                  "offset": 0,
+                  "slot": "5"
+                },
+                {
+                  "label": "closed",
+                  "type": "t_bool",
+                  "offset": 1,
+                  "slot": "5"
+                },
+                {
+                  "label": "disagreement",
+                  "type": "t_bool",
+                  "offset": 2,
+                  "slot": "5"
+                },
+                {
+                  "label": "hostVote",
+                  "type": "t_enum(ResultVote)263",
+                  "offset": 3,
+                  "slot": "5"
+                },
+                {
+                  "label": "player2Vote",
+                  "type": "t_enum(ResultVote)263",
+                  "offset": 4,
+                  "slot": "5"
+                }
+              ],
+              "numberOfBytes": "192"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            },
+            "t_uint8": {
+              "label": "uint8",
+              "numberOfBytes": "1"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true,
+          "namespaces": {
+            "erc7201:openzeppelin.storage.Initializable": [
+              {
+                "contract": "Initializable",
+                "label": "_initialized",
+                "type": "t_uint64",
+                "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "contract": "Initializable",
+                "label": "_initializing",
+                "type": "t_bool",
+                "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73",
+                "offset": 8,
+                "slot": "0"
+              }
+            ]
+          }
+        },
+        "solcVersion": "0.8.24"
+      }
+    },
+    {
+      "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:Initializable": {
+        "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:56",
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_struct(InitializableStorage)10_storage": {
+              "label": "struct Initializable.InitializableStorage",
+              "members": [
+                {
+                  "label": "_initialized",
+                  "type": "t_uint64",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "_initializing",
+                  "type": "t_bool",
+                  "offset": 8,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            },
+            "t_uint64": {
+              "label": "uint64",
+              "numberOfBytes": "8"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": false,
+          "namespaces": {
+            "erc7201:openzeppelin.storage.Initializable": [
+              {
+                "contract": "Initializable",
+                "label": "_initialized",
+                "type": "t_uint64",
+                "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "contract": "Initializable",
+                "label": "_initializing",
+                "type": "t_bool",
+                "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73",
+                "offset": 8,
+                "slot": "0"
+              }
+            ]
+          }
+        },
+        "solcVersion": "0.8.24"
+      },
+      "contracts/Duel.sol:Duel": {
+        "src": "contracts/Duel.sol:4",
+        "version": {
+          "withMetadata": "b7a2103bef899a8a0e06ea06eafdebe31efa782f8eb80fb54a0270dd9b2ecd4d",
+          "withoutMetadata": "df7a80882a94363f214dae2bf686aba3bef94b338b2c0f9912c462ec69069380",
+          "linkedWithoutMetadata": "df7a80882a94363f214dae2bf686aba3bef94b338b2c0f9912c462ec69069380"
+        },
+        "inherit": [],
+        "libraries": [],
+        "methods": [
+          "(address,uint256)",
+          "join()",
+          "excludePlayer2()",
+          "cancel()",
+          "start()",
+          "voteForDraw()",
+          "voteForPlace(uint8)",
+          "forceAppointWinner(address)",
+          "forceDraw()"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Duel",
+            "src": "contracts/Duel.sol:31"
+          },
+          {
+            "kind": "state-variable-assignment",
+            "name": "commissionPercent",
+            "src": "contracts/Duel.sol:5"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "label": "commissionPercent",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_uint8",
+              "contract": "Duel",
+              "src": "contracts/Duel.sol:5"
+            },
+            {
+              "label": "arbiter",
+              "offset": 1,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Duel",
+              "src": "contracts/Duel.sol:7"
+            },
+            {
+              "label": "host",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_address",
+              "contract": "Duel",
+              "src": "contracts/Duel.sol:8"
+            },
+            {
+              "label": "player2",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_address",
+              "contract": "Duel",
+              "src": "contracts/Duel.sol:9"
+            },
+            {
+              "label": "bet",
+              "offset": 0,
+              "slot": "3",
+              "type": "t_uint256",
+              "contract": "Duel",
+              "src": "contracts/Duel.sol:11"
+            },
+            {
+              "label": "timeStart",
+              "offset": 0,
+              "slot": "4",
+              "type": "t_uint256",
+              "contract": "Duel",
+              "src": "contracts/Duel.sol:13"
+            },
+            {
+              "label": "playPeriod",
+              "offset": 0,
+              "slot": "5",
+              "type": "t_uint256",
+              "contract": "Duel",
+              "src": "contracts/Duel.sol:14"
+            },
+            {
+              "label": "started",
+              "offset": 0,
+              "slot": "6",
+              "type": "t_bool",
+              "contract": "Duel",
+              "src": "contracts/Duel.sol:16"
+            },
+            {
+              "label": "closed",
+              "offset": 1,
+              "slot": "6",
+              "type": "t_bool",
+              "contract": "Duel",
+              "src": "contracts/Duel.sol:17"
+            },
+            {
+              "label": "disagreement",
+              "offset": 2,
+              "slot": "6",
+              "type": "t_bool",
+              "contract": "Duel",
+              "src": "contracts/Duel.sol:18"
+            },
+            {
+              "label": "drawVotes",
+              "offset": 0,
+              "slot": "7",
+              "type": "t_mapping(t_address,t_bool)",
+              "contract": "Duel",
+              "src": "contracts/Duel.sol:20"
+            },
+            {
+              "label": "placeVotes",
+              "offset": 0,
+              "slot": "8",
+              "type": "t_mapping(t_address,t_uint8)",
+              "contract": "Duel",
+              "src": "contracts/Duel.sol:21"
+            }
+          ],
+          "types": {
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_mapping(t_address,t_bool)": {
+              "label": "mapping(address => bool)",
+              "numberOfBytes": "32"
+            },
+            "t_mapping(t_address,t_uint8)": {
+              "label": "mapping(address => uint8)",
+              "numberOfBytes": "32"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            },
+            "t_uint8": {
+              "label": "uint8",
+              "numberOfBytes": "1"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true,
+          "namespaces": {}
+        },
+        "solcVersion": "0.8.24"
+      },
+      "contracts/Duels.sol:Duels": {
+        "src": "contracts/Duels.sol:6",
+        "version": {
+          "withMetadata": "525df0ab0e9c1befe495c474faac4e50aa31aefe4843303bf7bbdaa02e0f714e",
+          "withoutMetadata": "b3eacbb8ca127db296076d36c9e246450339a3eb665cd0cc9824ad9668246b56",
+          "linkedWithoutMetadata": "b3eacbb8ca127db296076d36c9e246450339a3eb665cd0cc9824ad9668246b56"
+        },
+        "inherit": [
+          "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:Initializable"
+        ],
+        "libraries": [],
+        "methods": [
+          "initialize(uint256,uint8)",
+          "createGame(uint256)",
+          "join(uint256)",
+          "excludePlayer2(uint256)",
+          "cancel(uint256)",
+          "start(uint256)",
+          "voteResult(uint256,uint8)",
+          "forceAppointWinner(uint256,address)",
+          "forceDraw(uint256)",
+          "setArbiter(address)",
+          "setMinimalBet(uint256)",
+          "setComissonProcent(uint8)"
+        ],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [
+            {
+              "label": "arbiter",
+              "offset": 0,
+              "slot": "0",
+              "type": "t_address",
+              "contract": "Duels",
+              "src": "contracts/Duels.sol:9"
+            },
+            {
+              "label": "commissionPercent",
+              "offset": 20,
+              "slot": "0",
+              "type": "t_uint8",
+              "contract": "Duels",
+              "src": "contracts/Duels.sol:10"
+            },
+            {
+              "label": "minimalBet",
+              "offset": 0,
+              "slot": "1",
+              "type": "t_uint256",
+              "contract": "Duels",
+              "src": "contracts/Duels.sol:11"
+            },
+            {
+              "label": "games",
+              "offset": 0,
+              "slot": "2",
+              "type": "t_array(t_struct(Game)919_storage)dyn_storage",
+              "contract": "Duels",
+              "src": "contracts/Duels.sol:26"
+            }
+          ],
+          "types": {
+            "t_bool": {
+              "label": "bool",
+              "numberOfBytes": "1"
+            },
+            "t_struct(InitializableStorage)10_storage": {
+              "label": "struct Initializable.InitializableStorage",
+              "members": [
+                {
+                  "label": "_initialized",
+                  "type": "t_uint64",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "_initializing",
+                  "type": "t_bool",
+                  "offset": 8,
+                  "slot": "0"
+                }
+              ],
+              "numberOfBytes": "32"
+            },
+            "t_uint64": {
+              "label": "uint64",
+              "numberOfBytes": "8"
+            },
+            "t_address": {
+              "label": "address",
+              "numberOfBytes": "20"
+            },
+            "t_array(t_struct(Game)919_storage)dyn_storage": {
+              "label": "struct Duels.Game[]",
+              "numberOfBytes": "32"
+            },
+            "t_enum(ResultVote)890": {
+              "label": "enum Duels.ResultVote",
+              "members": [
+                "NotVoted",
+                "First",
+                "Second",
+                "Draw"
+              ],
+              "numberOfBytes": "1"
+            },
+            "t_struct(Game)919_storage": {
+              "label": "struct Duels.Game",
+              "members": [
+                {
+                  "label": "host",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "0"
+                },
+                {
+                  "label": "player2",
+                  "type": "t_address",
+                  "offset": 0,
+                  "slot": "1"
+                },
+                {
+                  "label": "bet",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "2"
+                },
+                {
+                  "label": "timeStart",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "3"
+                },
+                {
+                  "label": "playPeriod",
+                  "type": "t_uint256",
+                  "offset": 0,
+                  "slot": "4"
+                },
+                {
+                  "label": "started",
+                  "type": "t_bool",
+                  "offset": 0,
+                  "slot": "5"
+                },
+                {
+                  "label": "closed",
+                  "type": "t_bool",
+                  "offset": 1,
+                  "slot": "5"
+                },
+                {
+                  "label": "disagreement",
+                  "type": "t_bool",
+                  "offset": 2,
+                  "slot": "5"
+                },
+                {
+                  "label": "hostVote",
+                  "type": "t_enum(ResultVote)890",
+                  "offset": 3,
+                  "slot": "5"
+                },
+                {
+                  "label": "player2Vote",
+                  "type": "t_enum(ResultVote)890",
+                  "offset": 4,
+                  "slot": "5"
+                }
+              ],
+              "numberOfBytes": "192"
+            },
+            "t_uint256": {
+              "label": "uint256",
+              "numberOfBytes": "32"
+            },
+            "t_uint8": {
+              "label": "uint8",
+              "numberOfBytes": "1"
+            }
+          },
+          "layoutVersion": "1.2",
+          "flat": true,
+          "namespaces": {
+            "erc7201:openzeppelin.storage.Initializable": [
+              {
+                "contract": "Initializable",
+                "label": "_initialized",
+                "type": "t_uint64",
+                "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "contract": "Initializable",
+                "label": "_initializing",
+                "type": "t_bool",
+                "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73",
+                "offset": 8,
+                "slot": "0"
+              }
+            ]
+          }
+        },
+        "solcVersion": "0.8.24"
+      }
+    }
+  ]
+}
