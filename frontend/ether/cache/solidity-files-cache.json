@@ -39,8 +39,8 @@
       ]
     },
     "/home/alex/CivForMoney/frontend/ether/contracts/Duels.sol": {
-      "lastModificationDate": 1717170463403,
-      "contentHash": "4230239c5cb1f70b1b3ef2ffb9b51f0e",
+      "lastModificationDate": 1717253376847,
+      "contentHash": "9fc648b9173e6682153f6b17ec0a59a1",
       "sourceName": "contracts/Duels.sol",
       "solcConfig": {
         "version": "0.8.24",

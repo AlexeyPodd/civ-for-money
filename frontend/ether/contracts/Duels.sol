@@ -86,8 +86,8 @@ contract Duels is Initializable {
   function cancel(uint _gameIndex) external {
     require(games.length > _gameIndex, "Game was not created yet");
     Game memory game = games[_gameIndex];
-    require(!game.started, "Game has already been started");
     require(msg.sender == game.host, "You are not game host");
+    require(!game.started, "Game has already been started");
     // return all bets to players, close game
     if (game.player2 != address(0)) {
       (bool s2,) = game.player2.call{value: game.bet}("");
