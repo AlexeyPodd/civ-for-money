@@ -116,7 +116,7 @@ export default function NewGameForm({
         <Stack shouldWrapChildren direction='row' my="20px" w='100%'>
           <FormControl isRequired isInvalid={errors && errors[fieldNames[2]]}>
             <FormLabel>Bet</FormLabel>
-            <NumberInput defaultValue={0.0005} min={0} focusBorderColor='#48BB78'>
+            <NumberInput defaultValue={0.005} min={0} focusBorderColor='#48BB78'>
               <NumberInputField {...register(fieldNames[2], {
                 validate: {
                   balanceSufficient: validateBalanceSufficient,

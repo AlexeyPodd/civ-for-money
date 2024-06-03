@@ -3,7 +3,7 @@ pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract Duels is Initializable {
+contract DuelsV1 is Initializable {
   enum ResultVote { NotVoted, First, Second, Draw }
 
   address public arbiter;

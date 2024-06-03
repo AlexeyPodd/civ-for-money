@@ -1,21 +1,24 @@
-from server.settings import DUEL_ABI
-from .provider import web3
 import json
+from web3.exceptions import ContractLogicError
+
+from server.settings import DUELS_V1_ABI, SMART_CONTRACT_ADDRESS
+from .provider import web3
 
 
 class DuelSmartContractViewAPI:
-    def __init__(self, address):
-        self.contract = web3.eth.contract(address=address, abi=DUEL_ABI)
-        self.__contract_views = self.__get_contract_views(DUEL_ABI)
+    def __init__(self, game_id: int):
+        if game_id < 0:
+            raise AttributeError('Game index must be positive')
 
-    @staticmethod
-    def __get_contract_views(abi_string):
-        abi_list = json.loads(abi_string)
-        return [method['name'] for method in abi_list
-                if method['type'] == 'function' and method['stateMutability'] == 'view']
+        self.__contract = web3.eth.contract(address=SMART_CONTRACT_ADDRESS, abi=json.loads(DUELS_V1_ABI))
 
-    def __getattr__(self, item):
-        if item not in self.__contract_views:
-            raise AttributeError(f"Contract does not have view function '{item}'")
+        try:
+            self.__game_info = self.__contract.functions.games(game_id).call()
+        except ContractLogicError:
+            raise ValueError("Game with this index was not created yet")
 
-        return getattr(self.contract.functions, item)().call()
+    # def __getattr__(self, item):
+    #     if item not in self.__contract_views:
+    #         raise AttributeError(f"Contract does not have view function '{item}'")
+    #
+    #     return getattr(self.contract.functions, item)().call()

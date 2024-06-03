@@ -1,0 +1,193 @@
+{
+  "manifestVersion": "3.2",
+  "proxies": [
+    {
+      "address": "0x2A97D32b93fd9cf072fFEf102B541CF21A73A2e2",
+      "txHash": "0xe76f44bc797faa713d42600c6ac3a26cedd3c5f50dba40c36febc8bed09b2023",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "a96d54a02f866010d2a116dff05ad986711f8db680096aeeccdc7ba2d57a6c16": {
+      "address": "0x991a6c572f73562462fF6cB02543Ea8e7D2fEaE6",
+      "txHash": "0x90a5790570bc76b915ba335f85debd9584c265bf7344009e510bc38ed4ae1407",
+      "layout": {
+        "solcVersion": "0.8.24",
+        "storage": [
+          {
+            "label": "arbiter",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_address",
+            "contract": "DuelsV1",
+            "src": "contracts/DuelsV1.sol:9"
+          },
+          {
+            "label": "commissionPercent",
+            "offset": 20,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "DuelsV1",
+            "src": "contracts/DuelsV1.sol:10"
+          },
+          {
+            "label": "minimalBet",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256",
+            "contract": "DuelsV1",
+            "src": "contracts/DuelsV1.sol:11"
+          },
+          {
+            "label": "games",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_array(t_struct(Game)292_storage)dyn_storage",
+            "contract": "DuelsV1",
+            "src": "contracts/DuelsV1.sol:26"
+          }
+        ],
+        "types": {
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)10_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_struct(Game)292_storage)dyn_storage": {
+            "label": "struct DuelsV1.Game[]",
+            "numberOfBytes": "32"
+          },
+          "t_enum(ResultVote)263": {
+            "label": "enum DuelsV1.ResultVote",
+            "members": [
+              "NotVoted",
+              "First",
+              "Second",
+              "Draw"
+            ],
+            "numberOfBytes": "1"
+          },
+          "t_struct(Game)292_storage": {
+            "label": "struct DuelsV1.Game",
+            "members": [
+              {
+                "label": "host",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "player2",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "bet",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "timeStart",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "playPeriod",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "started",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "closed",
+                "type": "t_bool",
+                "offset": 1,
+                "slot": "5"
+              },
+              {
+                "label": "disagreement",
+                "type": "t_bool",
+                "offset": 2,
+                "slot": "5"
+              },
+              {
+                "label": "hostVote",
+                "type": "t_enum(ResultVote)263",
+                "offset": 3,
+                "slot": "5"
+              },
+              {
+                "label": "player2Vote",
+                "type": "t_enum(ResultVote)263",
+                "offset": 4,
+                "slot": "5"
+              }
+            ],
+            "numberOfBytes": "192"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

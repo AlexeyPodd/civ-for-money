@@ -9,7 +9,7 @@ import { useContext, useEffect, useState } from "react";
 import { SignerContext } from "../../context/SignerContext";
 import { useSelector } from "react-redux";
 import { selectRules } from "../../redux/rulesSlice";
-import deploy from "../../ethereumAPI/contractDeploy";
+import DuelContractAPIManager from "../../ethereumAPI/api";
 
 function NewGameContainer() {
   // server api
@@ -55,23 +55,21 @@ function NewGameContainer() {
       return;
     }
 
-    // deploying smart contract
+    // creating new game instance in smart contract
+    const contractAPI = new DuelContractAPIManager(signer);
+    let newGameID;
     try {
-      const contract = await deploy(
-        signer,
-        import.meta.env.VITE_ARBITER_ADDRESS,
+      newGameID = await contractAPI.createGame(
         formData.playPeriod * formData.playPeriodType,
         formData.bet * 10 ** formData.betDenomination,
       );
-      await contract.waitForDeployment();
     }
     catch (err) {
       console.error(err);
       return;
     }
 
-    console.log(await contract.getAddress());
-
+    console.log(newGameID);
     console.log('continuing creating game process');
   }
 

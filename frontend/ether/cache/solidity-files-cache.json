@@ -38,45 +38,6 @@
         "Duel"
       ]
     },
-    "/home/alex/CivForMoney/frontend/ether/contracts/Duels.sol": {
-      "lastModificationDate": 1717253376847,
-      "contentHash": "9fc648b9173e6682153f6b17ec0a59a1",
-      "sourceName": "contracts/Duels.sol",
-      "solcConfig": {
-        "version": "0.8.24",
-        "settings": {
-          "evmVersion": "paris",
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata",
-                "storageLayout"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.24"
-      ],
-      "artifacts": [
-        "Duels"
-      ]
-    },
     "/home/alex/CivForMoney/frontend/ether/node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol": {
       "lastModificationDate": 1717156892361,
       "contentHash": "f0cedd674b4863ee90d1521a92ab82df",
@@ -112,6 +73,45 @@
       ],
       "artifacts": [
         "Initializable"
+      ]
+    },
+    "/home/alex/CivForMoney/frontend/ether/contracts/DuelsV1.sol": {
+      "lastModificationDate": 1717407815757,
+      "contentHash": "3b3e37954470751be672b8067b532da2",
+      "sourceName": "contracts/DuelsV1.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "DuelsV1"
       ]
     }
   }
