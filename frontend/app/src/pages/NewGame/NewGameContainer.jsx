@@ -2,14 +2,15 @@ import NewGame from "./NewGame";
 import withLoginOffer from "../../hoc/withLoginOffer";
 import withConnectWalletOffer from "../../hoc/withConnectWalletOffer";
 import { compose } from "@reduxjs/toolkit";
-import { useCreateRuleMutation, useDeleteRuleMutation, useGetGameTypesQuery, useGetUserRulesQuery, useUpdateRuleMutation } from "../../redux/api";
+import { useCreateGameMutation, useCreateRuleMutation, useDeleteRuleMutation, useGetGameTypesQuery, useGetUserRulesQuery, useUpdateRuleMutation } from "../../redux/api";
 import Preloader from "../../components/Preloader/Preloader"
 import SomeError from "../../components/SomeError/SomeError";
 import { useContext, useEffect, useState } from "react";
 import { SignerContext } from "../../context/SignerContext";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectRules } from "../../redux/rulesSlice";
 import DuelContractAPIManager from "../../ethereumAPI/api";
+import { gameCreatingFinished, gameCreatingStarted, selectIsCreatingGame } from "../../redux/gamesSlice";
 
 function NewGameContainer() {
   // server api
@@ -18,6 +19,10 @@ function NewGameContainer() {
   const { data: gameTypes, error: gettingGameTypesError, isLoading: isGettingGameTypes } = useGetGameTypesQuery();
   const [updateRule] = useUpdateRuleMutation();
   const [createRule] = useCreateRuleMutation();
+  const [registerGame, {isSuccess: gameRegistered, isError: gameFailedToRegister}] = useCreateGameMutation();
+
+  const isCreatingGame = useSelector(selectIsCreatingGame);
+  const dispatch = useDispatch();
 
   const rules = useSelector(selectRules);
 
@@ -35,6 +40,13 @@ function NewGameContainer() {
     getBalance();
   }, [signer]);
 
+  // Effect for enabling form after game created
+  useEffect(() => {
+    if (gameRegistered || gameFailedToRegister) {
+      dispatch(gameCreatingFinished());
+    }
+  }, [gameRegistered, gameFailedToRegister]);
+
   if (isGettingRulesList || isGettingGameTypes) return <Preloader />
   if (gettingRulesListError) return <SomeError error={gettingRulesListError} />
   if (ruleDeletingError) return <SomeError error={ruleDeletingError} />
@@ -45,13 +57,16 @@ function NewGameContainer() {
 
   // main submit function
   async function createGame(formData) {
+    dispatch(gameCreatingStarted());
     // managing rules
+    let ruleData;
     try {
-      const ruleData = await syncRule(formData);
+      ruleData = await syncRule(formData);
       setChosenRuleID(ruleData.id);
     }
     catch (err) {
       setRulesResponseErrors(err);
+      dispatch(gameCreatingFinished());
       return;
     }
 
@@ -66,11 +81,17 @@ function NewGameContainer() {
     }
     catch (err) {
       console.error(err);
+      dispatch(gameCreatingFinished());
       return;
     }
 
-    console.log(newGameID);
-    console.log('continuing creating game process');
+    // registering created game on server
+    registerGame({
+      title: formData.title,
+      game: formData.game,
+      rules: ruleData.id,
+      game_index: newGameID
+    });
   }
 
   function syncRule(formData) {
@@ -125,6 +146,7 @@ function NewGameContainer() {
     responseErrors={responseErrors}
     balanceWei={balanceWei}
     chosenRuleID={chosenRuleID}
+    isCreatingGame={isCreatingGame}
   />
 }
 

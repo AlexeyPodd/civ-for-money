@@ -2,12 +2,15 @@ from django.contrib import admin
 
 
 class GameAdmin(admin.ModelAdmin):
-    list_display = ('id', 'sc_address', 'title', 'game', 'time_creation', 'host', 'player2', 'started', 'closed', 'dispute')
-    list_display_links = ('id', 'sc_address', 'title')
-    search_fields = ('sc_address', 'title')
-    list_filter = ('started', 'closed', 'dispute', 'time_creation', 'game')
-    fields = ('sc_address', 'title', 'game', 'time_creation', 'rules', 'host', 'player2', 'started', 'closed', 'dispute')
-    readonly_fields = ('sc_address', 'title', 'game', 'time_creation', 'rules', 'host', 'player2', 'started', 'closed', 'dispute')
+    list_display = ('id', 'game_index', 'title', 'game', 'time_creation', 'host', 'player2', 'bet', 'started', 'closed',
+                    'dispute', 'time_expire', 'host_vote', 'player2_vote')
+    list_display_links = ('id', 'game_index', 'title')
+    search_fields = ('game_index', 'title')
+    list_filter = ('started', 'closed', 'dispute', 'time_creation', 'game', 'time_expire')
+    fields = ('game_index', 'title', 'game', 'time_creation', 'rules', 'host', 'player2', 'bet', 'started', 'closed',
+              'dispute', 'time_expire', 'host_vote', 'player2_vote')
+    readonly_fields = ('game_index', 'title', 'game', 'time_creation', 'rules', 'host', 'player2', 'bet', 'started',
+                       'closed', 'dispute', 'time_expire', 'host_vote', 'player2_vote')
 
 
 class RulesAdmin(admin.ModelAdmin):

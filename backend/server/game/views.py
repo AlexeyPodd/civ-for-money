@@ -1,12 +1,16 @@
+from datetime import datetime
+
 from rest_framework import mixins, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
+from steam_auth.models import Wallet
 from .models import Rules, Game
 from .permissions import RulesPermission
 from .serializers import RulesSerializer, GameSerializer
+from .web3.api import DuelsSmartContractViewAPI
 
 
 @api_view(['GET'])
@@ -50,3 +54,40 @@ class GameViewSet(mixins.CreateModelMixin,
     permission_classes = (IsAuthenticatedOrReadOnly,)
     serializer_class = GameSerializer
     queryset = Game.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        game_index = request.data['game_index']
+
+        if Game.objects.filter(game_index=game_index).exists():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        contract_view = DuelsSmartContractViewAPI(game_index)
+        try:
+            contract_view.fetch_game_info()
+        except ValueError:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if contract_view.timeStart:
+            time_expire = datetime.fromtimestamp(contract_view.timeStart + contract_view.playPeriod)
+        else:
+            time_expire = None
+
+        host_wallet, created = Wallet.objects.get_or_create(owner=request.user, address=contract_view.host)
+
+        game_data = {
+            **request.data,
+            'host': host_wallet.pk,
+            'player2': None,
+            'bet': contract_view.bet,
+            'started': contract_view.started,
+            'closed': contract_view.closed,
+            'dispute': contract_view.dispute,
+            'host_vote': contract_view.hostVote,
+            'player2_vote': contract_view.player2Vote,
+            'time_expire': time_expire,
+        }
+
+        serializer = self.get_serializer(data=game_data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

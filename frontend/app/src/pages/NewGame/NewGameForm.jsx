@@ -12,6 +12,7 @@ export default function NewGameForm({
   responseErrors,
   balanceWei,
   chosenRuleID,
+  isCreatingGame,
 }) {
 
   const fieldNames = [
@@ -35,7 +36,10 @@ export default function NewGameForm({
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm({ defaultValues: { betDenomination: '18' } });
+  } = useForm({ 
+    defaultValues: { betDenomination: '18' },
+    disabled: isCreatingGame,
+   });
 
   function validateBalanceSufficient(value) {
     const bet = Math.floor(value * 10 ** getValues()[fieldNames[3]]);
@@ -92,7 +96,7 @@ export default function NewGameForm({
   }, [responseErrors]);
 
   return (
-    <Flex justify='center'>
+    <Flex justify='center' filter={isCreatingGame && 'blur(2px)'}>
       <form onSubmit={handleSubmit(onSubmit)}>
         {errors && errors.root && errors.root.serverError
           && <Flex justify='center' color='red' bg='red.100'>
@@ -190,6 +194,7 @@ export default function NewGameForm({
               ml='auto'
               onClick={() => deleteRule(watch(fieldNames[6]))}
               isLoading={ruleIsDeleting}
+              isDisabled={isCreatingGame}
             >
               Delete this rules
             </Button>
@@ -210,6 +215,7 @@ export default function NewGameForm({
           size='lg'
           colorScheme="orange"
           type='submit'
+          isLoading={isCreatingGame}
         >
           Deploy
         </Button>

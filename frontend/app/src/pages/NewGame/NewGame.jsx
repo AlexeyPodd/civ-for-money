@@ -10,6 +10,7 @@ export default function NewGame({
   responseErrors,
   balanceWei,
   chosenRuleID,
+  isCreatingGame,
 }) {
   return (
     <NewGameForm
@@ -22,6 +23,7 @@ export default function NewGame({
       responseErrors={responseErrors}
       balanceWei={balanceWei}
       chosenRuleID={chosenRuleID}
+      isCreatingGame={isCreatingGame}
     />
   )
 }

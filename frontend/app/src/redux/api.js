@@ -85,6 +85,13 @@ export const api = createApi({
     getGameTypes: build.query({
       query: () => '/game-types/',
     }),
+    createGame: build.mutation({
+      query: ({title, game, rules, game_index}) => ({
+        url: '/games/',
+        method: 'POST',
+        body: {title, game, rules, game_index},
+      })
+    }),
   }),
 });
 
@@ -98,4 +105,5 @@ export const {
   useUpdateRuleMutation,
   useDeleteRuleMutation,
   useGetGameTypesQuery,
+  useCreateGameMutation,
 } = api;

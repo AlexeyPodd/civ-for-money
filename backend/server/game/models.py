@@ -1,5 +1,3 @@
-from django.core.exceptions import ValidationError
-from django.core.validators import RegexValidator
 from django.db import models
 
 from steam_auth.models import User, Wallet
@@ -10,28 +8,29 @@ class Game(models.Model):
     class GameTitle(models.TextChoices):
         CIVILIZATION_5 = "CIV5"
 
-    sc_address = models.CharField(
-        verbose_name="smart contract address",
-        max_length=42,
-        unique=True,
-        validators=[RegexValidator(regex=r'^0x[a-fA-F0-9]{40}$')],
-    )
+    class Vote(models.IntegerChoices):
+        NOT_VOTED = 0
+        FIRST_PLACE = 1
+        SECOND_PLACE = 2
+        DRAW = 3
+
+    game_index = models.PositiveIntegerField(unique=True)
     title = models.CharField(max_length=32)
     game = models.CharField(max_length=4, choices=GameTitle.choices, default=GameTitle.choices[0])
     rules = models.ForeignKey('Rules', on_delete=models.PROTECT, related_name='games')
     host = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='hosted_games')
     player2 = models.ForeignKey(Wallet, on_delete=models.CASCADE, blank=True, null=True, related_name='joined_games')
+    bet = models.PositiveBigIntegerField()
     started = models.BooleanField(default=False)
     closed = models.BooleanField(default=False)
     dispute = models.BooleanField(default=False)
+    time_expire = models.DateTimeField(null=True, blank=True)
     time_creation = models.DateTimeField("creation time", auto_now_add=True)
+    host_vote = models.PositiveSmallIntegerField(choices=Vote, default=Vote.NOT_VOTED)
+    player2_vote = models.PositiveSmallIntegerField(choices=Vote, default=Vote.NOT_VOTED)
 
     class Meta:
         ordering = ['time_creation']
-
-    def clean(self):
-        if self.host == self.player2:
-            raise ValidationError('Host can not appoint himself as player2')
 
 
 class Rules(models.Model):
