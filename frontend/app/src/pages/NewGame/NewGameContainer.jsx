@@ -11,15 +11,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectRules } from "../../redux/rulesSlice";
 import DuelContractAPIManager from "../../ethereumAPI/api";
 import { gameCreatingFinished, gameCreatingStarted, selectIsCreatingGame } from "../../redux/gamesSlice";
+import { useDisclosure } from "@chakra-ui/react";
 
 function NewGameContainer() {
   // server api
   const { error: gettingRulesListError, isLoading: isGettingRulesList } = useGetUserRulesQuery();
-  const [deleteRule, { isSuccess: ruleIsDeleted, isLoading: ruleIsDeleting, error: ruleDeletingError, reset: resetDeleteMutation }] = useDeleteRuleMutation();
+  const [deleteRule, { isSuccess: ruleIsDeleted, isLoading: ruleIsDeleting, error: ruleDeletingError }] = useDeleteRuleMutation();
   const { data: gameTypes, error: gettingGameTypesError, isLoading: isGettingGameTypes } = useGetGameTypesQuery();
-  const [updateRule] = useUpdateRuleMutation();
-  const [createRule] = useCreateRuleMutation();
-  const [registerGame, {isSuccess: gameRegistered, isError: gameFailedToRegister}] = useCreateGameMutation();
+  const [updateRule, {isLoading: isRuleUpdating}] = useUpdateRuleMutation();
+  const [createRule, {isLoading: isRuleCreating}] = useCreateRuleMutation();
+  const [registerGame, {isLoading: isGameRegistering, isSuccess: gameRegistered, isError: gameFailedToRegister}] = useCreateGameMutation();
 
   const isCreatingGame = useSelector(selectIsCreatingGame);
   const dispatch = useDispatch();
@@ -29,6 +30,16 @@ function NewGameContainer() {
   const [responseErrors, setResponseErrors] = useState({});
 
   const [chosenRuleID, setChosenRuleID] = useState();
+  const [onChainGameIndex, setOnChainGameIndex] = useState(-1);
+
+  const { isOpen: isModalOpen, onOpen: onModalOpen, onClose: onModalClose } = useDisclosure();
+
+  // states for visualization of game creating process statuses
+  const [settingRulesSuccess, setSettingRulesSuccess] = useState(false);
+  const [settingRulesError, setSettingRulesError] = useState(false);
+  const [isCreatingOnChain, setIsCreatingOnChain] = useState(false);
+  const [isCreatingOnChainSuccess, setIsCreatingOnChainSuccess] = useState(false);
+  const [isCreatingOnChainError, setIsCreatingOnChainError] = useState(false);
 
   const { signer } = useContext(SignerContext);
   const [balanceWei, setBalanceWei] = useState();
@@ -57,20 +68,33 @@ function NewGameContainer() {
 
   // main submit function
   async function createGame(formData) {
+    // opening modal window with process statuses
+    onModalOpen();
+
+    //refreshing statuses states
     dispatch(gameCreatingStarted());
+    setSettingRulesSuccess(false);
+    setSettingRulesError(false);
+    setIsCreatingOnChain(false);
+    setIsCreatingOnChainSuccess(false);
+    setIsCreatingOnChainError(false);
+
     // managing rules
     let ruleData;
     try {
       ruleData = await syncRule(formData);
       setChosenRuleID(ruleData.id);
+      setSettingRulesSuccess(true);
     }
     catch (err) {
       setRulesResponseErrors(err);
       dispatch(gameCreatingFinished());
+      setSettingRulesError(true);
       return;
     }
 
     // creating new game instance in smart contract
+    setIsCreatingOnChain(true);
     const contractAPI = new DuelContractAPIManager(signer);
     let newGameID;
     try {
@@ -78,10 +102,15 @@ function NewGameContainer() {
         formData.playPeriod * formData.playPeriodType,
         formData.bet * 10 ** formData.betDenomination,
       );
+      setOnChainGameIndex(newGameID);
+      setIsCreatingOnChainSuccess(true);
+      setIsCreatingOnChain(false);
     }
     catch (err) {
       console.error(err);
       dispatch(gameCreatingFinished());
+      setIsCreatingOnChainError(true);
+      setIsCreatingOnChain(false);
       return;
     }
 
@@ -147,6 +176,18 @@ function NewGameContainer() {
     balanceWei={balanceWei}
     chosenRuleID={chosenRuleID}
     isCreatingGame={isCreatingGame}
+    isSettingRules={isRuleCreating || isRuleUpdating}
+    settingRulesSuccess={settingRulesSuccess}
+    settingRulesError={settingRulesError}
+    isCreatingOnChain={isCreatingOnChain}
+    isCreatingOnChainSuccess={isCreatingOnChainSuccess}
+    isCreatingOnChainError={isCreatingOnChainError}
+    isGameRegistering={isGameRegistering}
+    gameRegistered={gameRegistered}
+    gameFailedToRegister={gameFailedToRegister}
+    onChainGameIndex={onChainGameIndex}
+    isModalOpen={isModalOpen}
+    onModalClose={onModalClose}
   />
 }
 

@@ -23,7 +23,7 @@ const router = createBrowserRouter(
     <Route path="/" element={<RootLayout />}>
       <Route index element={<Lobby />} />
       <Route path="my-games" element={<MyGamesContainer />} />
-      <Route path="game/:gameId" element={<GameContainer />} />
+      <Route path="game/:gameID" element={<GameContainer />} />
       <Route path="new-game" element={<NewGameContainer />} />
       <Route path="disputes" element={<Disputes />} />
       <Route path="login" element={<Login />} />

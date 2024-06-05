@@ -1,4 +1,4 @@
-import { Button, Flex, FormControl, FormLabel, Input, FormErrorMessage, Select, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Stack, Textarea, Text } from "@chakra-ui/react";
+import { Button, Flex, FormControl, FormLabel, Input, FormErrorMessage, Select, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Stack, Textarea, Text, FormHelperText } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useForm } from 'react-hook-form';
 
@@ -164,6 +164,9 @@ export default function NewGameForm({
                 <NumberDecrementStepper />
               </NumberInputStepper>
             </NumberInput>
+            <FormHelperText>Time from game start to end of voting period.</FormHelperText>
+            <FormHelperText>If you have not voted before the end of it,</FormHelperText>
+            <FormHelperText>your opponent's vote is considered truth.</FormHelperText>
             <FormErrorMessage>{errors[fieldNames[4]]?.message}</FormErrorMessage>
           </FormControl>
 
@@ -217,7 +220,7 @@ export default function NewGameForm({
           type='submit'
           isLoading={isCreatingGame}
         >
-          Deploy
+          Create
         </Button>
 
       </form>
