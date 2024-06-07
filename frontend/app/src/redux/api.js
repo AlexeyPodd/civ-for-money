@@ -92,6 +92,9 @@ export const api = createApi({
         body: {title, game, rules, game_index},
       })
     }),
+    getGame: build.query({
+      query: (gameID) => `/games/${gameID}/`,
+    }),
   }),
 });
 
@@ -106,4 +109,5 @@ export const {
   useDeleteRuleMutation,
   useGetGameTypesQuery,
   useCreateGameMutation,
+  useGetGameQuery,
 } = api;

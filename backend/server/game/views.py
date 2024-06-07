@@ -9,7 +9,7 @@ from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from steam_auth.models import Wallet
 from .models import Rules, Game
 from .permissions import RulesPermission
-from .serializers import RulesSerializer, GameSerializer
+from .serializers import RulesSerializer, GameReadSerializer, GameWriteSerializer
 from .web3.api import DuelsSmartContractViewAPI
 
 
@@ -52,8 +52,14 @@ class GameViewSet(mixins.CreateModelMixin,
                   mixins.ListModelMixin,
                   GenericViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly,)
-    serializer_class = GameSerializer
     queryset = Game.objects.all()
+    lookup_field = 'game_index'
+
+    def get_serializer_class(self):
+        if self.action in ['list', 'retrieve']:
+            return GameReadSerializer
+        else:
+            return GameWriteSerializer
 
     def create(self, request, *args, **kwargs):
         game_index = request.data['game_index']
