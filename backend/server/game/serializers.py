@@ -32,6 +32,7 @@ class GameReadSerializer(serializers.ModelSerializer):
     player2 = WalletSerializer(read_only=True)
     rules = RulesSerializer(read_only=True)
     game = serializers.SerializerMethodField()
+    time_creation = serializers.SerializerMethodField()
 
     class Meta:
         model = Game
@@ -39,6 +40,9 @@ class GameReadSerializer(serializers.ModelSerializer):
 
     def get_game(self, obj):
         return obj.get_game_display()
+
+    def get_time_creation(self, obj):
+        return round(obj.time_creation.timestamp() * 1000)
 
 
 class GameWriteSerializer(serializers.ModelSerializer):

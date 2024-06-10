@@ -2,7 +2,7 @@ const { ethers, upgrades } = require('hardhat');
 
 async function main() {
   const duels = await ethers.getContractFactory('DuelsV1');
-  const proxy = await upgrades.deployProxy(duels, [ethers.parseEther("0.005"), 5]);
+  const proxy = await upgrades.deployProxy(duels, [ethers.parseEther("0.005"), 5], {txOverrides: {maxFeePerGas: ethers.parseUnits("8", "gwei")}});
   await proxy.waitForDeployment();
 
   const proxyAddress = await proxy.getAddress()

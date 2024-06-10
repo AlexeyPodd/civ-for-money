@@ -22,6 +22,10 @@ export default class DuelContractAPIManager {
     }
   }
 
+  async getGameData() {
+    return await this.contract.games(this.gameIndex);
+  }
+
   // async join() {
   //   const betValue = await this.contract.bet();
 

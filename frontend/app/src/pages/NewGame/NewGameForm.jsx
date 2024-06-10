@@ -158,16 +158,19 @@ export default function NewGameForm({
           <FormControl isRequired isInvalid={errors && errors[fieldNames[4]]}>
             <FormLabel>Game Duration</FormLabel>
             <NumberInput min={0} defaultValue={1} focusBorderColor='#48BB78'>
-              <NumberInputField {...register(fieldNames[4], {min: 1})} />
+              <NumberInputField {...register(fieldNames[4], {
+                min: {value: 1, message: 'must be at least 1'},
+                max: {value: 40, message: '40 is maximum'}})
+              } />
               <NumberInputStepper>
                 <NumberIncrementStepper />
                 <NumberDecrementStepper />
               </NumberInputStepper>
             </NumberInput>
+            <FormErrorMessage>{errors[fieldNames[4]]?.message}</FormErrorMessage>
             <FormHelperText>Time from game start to end of voting period.</FormHelperText>
             <FormHelperText>If you have not voted before the end of it,</FormHelperText>
             <FormHelperText>your opponent's vote is considered truth.</FormHelperText>
-            <FormErrorMessage>{errors[fieldNames[4]]?.message}</FormErrorMessage>
           </FormControl>
 
           <FormControl>

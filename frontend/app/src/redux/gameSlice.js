@@ -4,20 +4,20 @@ import { api } from "./api";
 const gameSlice = createSlice({
   name: 'game',
   initialState: {
-    game: {},
+    serverGameData: {},
   },
   extraReducers: (builder) => {
     builder
       .addMatcher(
         api.endpoints.getGame.matchFulfilled,
         (state, {payload}) => {
-          state.game = payload;
+          state.serverGameData = payload;
         }
       )
   }
 });
 
 
-export const selectGame = (state) => state.game.game;
+export const selectServerGameData = (state) => state.game.serverGameData;
 
 export default gameSlice.reducer;
