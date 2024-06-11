@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { SignerContext } from "../../../../context/SignerContext";
 
 import EtherConnector from "./EtherConnector";
@@ -15,9 +15,12 @@ export default function EtherConnectorContainer() {
   const walletConnected = useSelector(selectWalletConnected);
   const dispatch = useDispatch();
 
-  const [registerUserWallet, { error, isError, isLoading: isRegistering }] = useRegisterUserWalletMutation();
+  const [registerUserWallet, { error, isError, isSuccess, isLoading: isRegistering }] = useRegisterUserWalletMutation();
+
+  const [isConnecting, setIsConnecting] = useState(false);
 
   async function initializeSigner() {
+    setIsConnecting(true);
     let accounts = [];
     try {
       accounts = await provider.send('eth_requestAccounts', []);
@@ -26,18 +29,20 @@ export default function EtherConnectorContainer() {
       console.error(err);
     }
     await onAccountChange(accounts);
+    window.ethereum.on('accountsChanged', onAccountChange);
   }
 
   function disconnect() {
     dispatch(setWalletConnected(false));
     setSigner(null);
-    window.ethereum.removeListener('accountsChanged', onAccountChange);
+    window.ethereum.removeAllListeners();
   }
 
   async function connect() {
+    setIsConnecting(true);
+    dispatch(setWalletConnected(false));
     const s = await provider.getSigner();
     setSigner(s);
-    window.ethereum.on('accountsChanged', onAccountChange);
 
     const verifyAddressMessage = 'verify your address';
     let signature;
@@ -51,6 +56,7 @@ export default function EtherConnectorContainer() {
       message: verifyAddressMessage,
       signature: signature,
     });
+    setIsConnecting(false);
   }
 
   async function onAccountChange(accounts) {
@@ -68,11 +74,18 @@ export default function EtherConnectorContainer() {
     }
   }, [isError, error]);
 
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(setWalletConnected(true));
+    }
+  }, [isSuccess]);
+
   return <EtherConnector
     walletConnected={walletConnected}
     isRegistering={isRegistering}
     etherAddress={signer && signer.address.toLowerCase()}
-    initializeSigner={initializeSigner}
     disconnect={disconnect}
+    initializeSigner={initializeSigner}
+    isConnecting={isConnecting}
   />
 }

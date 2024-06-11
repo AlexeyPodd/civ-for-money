@@ -2,7 +2,14 @@ import { Button, Table, TableContainer, Tbody, Td, Th, Thead, Tr, Link, Image, T
 import secondsDurationToRepresentation from "../../utils/secondsDurationToRepresentation";
 import timestampToDateRepresentation from "../../utils/timestampToDateRepresentation";
 
-export default function GameTable({ game }) {
+export default function GameTable({
+  serverGameData,
+  onChainGameData,
+  isHost,
+  player2Joined,
+  isPlayer2,
+  gameStarted,
+}) {
   const votes = ["Not Voted", "Victory", "Loss", "Draw"]
 
   return (
@@ -17,19 +24,19 @@ export default function GameTable({ game }) {
         <Tbody>
           <Tr>
             <Td>Title</Td>
-            <Td>{game.title}</Td>
+            <Td>{serverGameData.title}</Td>
           </Tr>
           <Tr>
             <Td>Game</Td>
-            <Td>{game.game}</Td>
+            <Td>{serverGameData.game}</Td>
           </Tr>
           <Tr>
             <Td>Host</Td>
             <Td>
-              <Link href={`https://steamcommunity.com/profiles/${game.host.uuid}/`} isExternal >
+              <Link href={`https://steamcommunity.com/profiles/${serverGameData.host.uuid}/`} isExternal >
                 <Button colorScheme="green" >
-                  <Image borderRadius='full' src={game.host.avatar} alt='avatar' />
-                  <Text ms='10px'>{game.host.username}</Text>
+                  <Image borderRadius='full' src={serverGameData.host.avatar} alt='avatar' />
+                  <Text ms='10px'>{serverGameData.host.username}</Text>
                 </Button>
               </Link>
             </Td>
@@ -37,54 +44,60 @@ export default function GameTable({ game }) {
           <Tr>
             <Td>Second Player</Td>
             <Td>
-              {game.player2
-                && <Link href={`https://steamcommunity.com/profiles/${game.player2.uuid}/`} isExternal >
+              {serverGameData.player2
+                && <Link href={`https://steamcommunity.com/profiles/${serverGameData.player2.uuid}/`} isExternal >
                   <Button colorScheme="green" >
-                    <Image borderRadius='full' src={game.player2.avatar} alt='avatar' />
-                    <Text>{game.player2.username}</Text>
+                    <Image borderRadius='full' src={serverGameData.player2.avatar} alt='avatar' />
+                    <Text>{serverGameData.player2.username}</Text>
                   </Button>
                 </Link>
               }
-              <Button ms='5px' colorScheme="blue">Join</Button>
-              <Button ms='5px' colorScheme="orange">Quit</Button>
-              <Button ms='5px' colorScheme="red">Kick</Button>
+              {!player2Joined && !isHost
+                && <Button ms='5px' colorScheme="blue">Join</Button>
+              }
+              {player2Joined && isPlayer2
+                && <Button ms='5px' colorScheme="orange" isDisabled={walletIsWrong || gameStarted} >Quit</Button>
+              }
+              {player2Joined && isHost
+                && <Button ms='5px' colorScheme="red" isDisabled={walletIsWrong || gameStarted} >Kick</Button>
+              }
             </Td>
           </Tr>
           <Tr>
             <Td>Rules</Td>
-            <Td><Text>{game.rules.description}</Text></Td>
+            <Td><Text>{serverGameData.rules.description}</Text></Td>
           </Tr>
           <Tr>
             <Td>Bet Size</Td>
-            <Td>{`${Number(game.bet) / 10 ** 18} ETH`}</Td>
+            <Td>{`${onChainGameData.bet / 10 ** 18} ETH`}</Td>
           </Tr>
           <Tr>
             <Td>Status</Td>
             <Td>
-              {!game.started && !game.player2 && "Waiting for second player to connect"}
-              {!game.started && game.player2 && "Waiting for host to start the game"}
-              {game.started && !game.closed && !game.dispute && "The game is on now"}
-              {game.started && !game.closed && game.dispute && "Dispute about result"}
-              {game.closed && "Game is finished"}
+              {!onChainGameData.started && !onChainGameData.player2 && "Waiting for second player to connect"}
+              {!onChainGameData.started && onChainGameData.player2 && "Waiting for host to start the game"}
+              {onChainGameData.started && !onChainGameData.closed && !onChainGameData.dispute && "The game is on now"}
+              {onChainGameData.started && !onChainGameData.closed && onChainGameData.dispute && "Dispute about result"}
+              {onChainGameData.closed && "Game is finished"}
             </Td>
           </Tr>
           <Tr>
             <Td>Play & Voting Period Duration</Td>
-            <Td>{secondsDurationToRepresentation(Number(game.playPeriod))}</Td>
+            <Td>{secondsDurationToRepresentation(onChainGameData.playPeriod)}</Td>
           </Tr>
-          {game.started
+          {onChainGameData.started
             && <>
               <Tr>
                 <Td>End of play & voting period</Td>
-                <Td>{timestampToDateRepresentation(Number(game.timeStart) + Number(game.playPeriod))}</Td>
+                <Td>{timestampToDateRepresentation(onChainGameData.timeStart + onChainGameData.playPeriod)}</Td>
               </Tr>
               <Tr>
                 <Td>Host Vote</Td>
-                <Td>{votes[game.hostVote]}</Td>
+                <Td>{votes[onChainGameData.hostVote]}</Td>
               </Tr>
               <Tr>
                 <Td>Second Player Vote</Td>
-                <Td>{votes[game.player2Vote]}</Td>
+                <Td>{votes[onChainGameData.player2Vote]}</Td>
               </Tr>
             </>}
 

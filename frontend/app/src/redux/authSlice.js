@@ -26,7 +26,7 @@ const authSlice = createSlice({
       state.isLoggingIn = false;
     },
     setWalletConnected: (state, action) => {
-      state.walletConnected = action.payload.walletConnected;
+      state.walletConnected = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -60,18 +60,6 @@ const authSlice = createSlice({
           state.isStaff = payload.isStaff;
         }
       )
-      .addMatcher(
-        api.endpoints.registerUserWallet.matchFulfilled,
-        (state) => {
-          state.walletConnected = true;
-        }
-      )
-      .addMatcher(
-        api.endpoints.registerUserWallet.matchRejected,
-        (state) => {
-          state.walletConnected = false;
-        }
-      )
   }
 });
 
@@ -88,7 +76,7 @@ export const {
   tokenLost,
   loggingInStarted,
   loggingInFinished,
-  setWalletConnected
+  setWalletConnected,
 } = authSlice.actions;
 
 export default authSlice.reducer;

@@ -7,16 +7,12 @@ export default function EtherConnector({
   isRegistering,
   walletConnected,
   etherAddress,
+  disconnect,
   initializeSigner,
-  disconnect }) {
+  isConnecting,
+ }) {
   const [showDisconnectButton, setShowDisconnectButton] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(false);
 
-  async function connectWallet() {
-    setIsConnecting(true);
-    await initializeSigner();
-    setIsConnecting(false);
-  }
   function disConnectWallet() {
     disconnect();
     setShowDisconnectButton(false);
@@ -26,7 +22,7 @@ export default function EtherConnector({
     <Button
       colorScheme="yellow"
       isLoading={isConnecting || isRegistering}
-      onClick={connectWallet}
+      onClick={initializeSigner}
     >
       Connect Wallet
     </Button>

@@ -1,5 +1,5 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
-import GamesTable from "../../components/GamesTable/GamesTable";
+import GamesTable from "../../components/GamesTables/GamesTable";
 
 export default function MyGames() {
   return <Tabs colorScheme="yellow" p="20px" size="lg" variant="enclosed" >
