@@ -11,10 +11,14 @@ import withLoginOffer from "../../hoc/withLoginOffer";
 import withConnectWalletOffer from "../../hoc/withConnectWalletOffer";
 import { compose } from "@reduxjs/toolkit";
 import useFetchOnChainGameData from '../../hooks/useFetchOnChainGameData';
+import { selectIsArbiter, selectUUID } from '../../redux/authSlice';
+
 
 function GameContainer() {
   const { signer } = useContext(SignerContext);
   const { gameID } = useParams();
+  const uuid = useSelector(selectUUID);
+  const isArbiter = useSelector(selectIsArbiter);
 
   // fetching game data from server
   const { error, isLoading } = useGetGameQuery(gameID);
@@ -28,9 +32,11 @@ function GameContainer() {
   if (error) return <SomeError error={error} />
 
   return <Game
+    uuid={uuid}
     serverGameData={serverGameData}
     onChainGameData={onChainGameData}
     connectedWalletAddress={signer.address.toLowerCase()}
+    isArbiter={isArbiter}
   />
 }
 

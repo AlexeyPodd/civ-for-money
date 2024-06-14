@@ -4,9 +4,9 @@ export default function secondsDurationToRepresentation(seconds) {
   const minutes = Math.floor((seconds - days * 86_400 - hours *3_600) / 60);
 
   let representationParts = [];
-  if (days) representationParts.push(`${days} days`);
-  if (hours) representationParts.push(`${hours} hours`);
-  if (minutes) representationParts.push(`${minutes} minutes`);
+  if (days) representationParts.push(`${days} day(s)`);
+  if (hours) representationParts.push(`${hours} hour(s)`);
+  if (minutes) representationParts.push(`${minutes} minute(s)`);
 
   if (days || hours || minutes) return representationParts.join(', ');
   else return `${seconds} seconds`;

@@ -7,7 +7,7 @@ const authSlice = createSlice({
     isLoggingIn: false,
     isAuth: false,
     walletConnected: false,
-    isStaff: false,
+    isArbiter: false,
     username: null,
     avatar: null,
     uuid: null,
@@ -26,7 +26,14 @@ const authSlice = createSlice({
       state.isLoggingIn = false;
     },
     setWalletConnected: (state, action) => {
-      state.walletConnected = action.payload;
+      state.walletConnected = true;
+      if (action.payload == import.meta.env.VITE_ARBITER_ADDRESS.toLowerCase()) {
+        state.isArbiter = true;
+      }
+    },
+    setWalletDisconnected: state => {
+      state.walletConnected = false;
+      state.isArbiter = false;
     },
   },
   extraReducers: (builder) => {
@@ -35,7 +42,6 @@ const authSlice = createSlice({
         api.endpoints.login.matchFulfilled,
         (state, { payload }) => {
           state.isAuth = true;
-          state.isStaff = payload.isStaff;
           state.username = payload.username;
           state.avatar = payload.avatar;
           state.uuid = payload.uuid;
@@ -45,7 +51,6 @@ const authSlice = createSlice({
         api.endpoints.logout.matchFulfilled,
         (state) => {
           state.isAuth = false;
-          state.isStaff = false;
           state.username = null;
           state.avatar = null;
           state.uuid = null;
@@ -57,7 +62,6 @@ const authSlice = createSlice({
           state.username = payload.username;
           state.avatar = payload.avatar;
           state.uuid = payload.uuid;
-          state.isStaff = payload.isStaff;
         }
       )
   }
@@ -65,11 +69,11 @@ const authSlice = createSlice({
 
 export const selectIsAuth = (state) => state.auth.isAuth;
 export const selectWalletConnected = (state) => state.auth.walletConnected;
-export const selectIsStaff = (state) => state.auth.isStaff;
 export const selectUsername = (state) => state.auth.username;
 export const selectAvatar = (state) => state.auth.avatar;
 export const selectUUID = (state) => state.auth.uuid;
 export const selectIsLoggingIn = (state) => state.auth.isLoggingIn;
+export const selectIsArbiter = (state) => state.auth.isArbiter;
 
 export const {
   tokenGotten,
@@ -77,6 +81,7 @@ export const {
   loggingInStarted,
   loggingInFinished,
   setWalletConnected,
+  setWalletDisconnected,
 } = authSlice.actions;
 
 export default authSlice.reducer;

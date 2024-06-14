@@ -10,7 +10,7 @@ import { SignerContext } from "../../context/SignerContext";
 import { useDispatch, useSelector } from "react-redux";
 import { selectRules } from "../../redux/rulesSlice";
 import DuelContractAPIManager from "../../ethereumAPI/api";
-import { gameCreatingFinished, gameCreatingStarted, selectIsCreatingGame } from "../../redux/gamesSlice";
+import { gameCreatingFinished, gameCreatingStarted, selectIsCreatingGame } from "../../redux/gameSlice";
 import { useDisclosure } from "@chakra-ui/react";
 
 function NewGameContainer() {

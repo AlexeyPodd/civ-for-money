@@ -62,7 +62,7 @@ export const api = createApi({
       })
     }),
     updateRule: build.mutation({
-      query: ({id, title, description}) => ({
+      query: ({ id, title, description }) => ({
         url: `/rules/${id}/`,
         method: 'PUT',
         body: { title, description },
@@ -76,8 +76,8 @@ export const api = createApi({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-          dispatch(ruleDeleted({id: Number(arg)}));
-        } catch(err) {
+          dispatch(ruleDeleted({ id: Number(arg) }));
+        } catch (err) {
           console.error(err);
         }
       }
@@ -86,14 +86,18 @@ export const api = createApi({
       query: () => '/game-types/',
     }),
     createGame: build.mutation({
-      query: ({title, game, rules, game_index}) => ({
+      query: ({ title, game, rules, game_index }) => ({
         url: '/games/',
         method: 'POST',
-        body: {title, game, rules, game_index},
+        body: { title, game, rules, game_index },
       })
     }),
     getGame: build.query({
       query: (gameID) => `/games/${gameID}/`,
+    }),
+    getLobbyGames: build.query({
+      query: ({ pageNumber = 1, pageSize = 30 }) =>
+        `/games/lobby/?page_number=${pageNumber}&page_size=${pageSize}`,
     }),
   }),
 });
@@ -110,4 +114,5 @@ export const {
   useGetGameTypesQuery,
   useCreateGameMutation,
   useGetGameQuery,
+  useGetLobbyGamesQuery,
 } = api;

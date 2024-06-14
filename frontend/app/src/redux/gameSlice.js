@@ -4,13 +4,22 @@ import { api } from "./api";
 const gameSlice = createSlice({
   name: 'game',
   initialState: {
+    isCreatingGame: false,
     serverGameData: {},
     onChainGameData: {},
   },
   reducers: {
+    gameCreatingStarted: state => {
+      state.isCreatingGame = true;
+      window.onbeforeunload = () => true;
+    },
+    gameCreatingFinished: state => {
+      state.isCreatingGame = false;
+      window.onbeforeunload = undefined;
+    },
     onChainGameDataFetched: (state, action) => {
       state.onChainGameData = action.payload;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -33,10 +42,14 @@ const gameSlice = createSlice({
   }
 });
 
+export const {
+  gameCreatingStarted,
+  gameCreatingFinished,
+  onChainGameDataFetched
+} = gameSlice.actions;
 
-export const { onChainGameDataFetched } = gameSlice.actions;
 
-
+export const selectIsCreatingGame = (state) => state.game.isCreatingGame;
 export const selectServerGameData = (state) => state.game.serverGameData;
 export const selectOnChanGameData = (state) => state.game.onChainGameData;
 

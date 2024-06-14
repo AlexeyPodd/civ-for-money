@@ -1,46 +1,32 @@
 
-import { useEffect, useState } from 'react';
+import { useContext } from 'react';
 import GameTable from '../../components/GamesTables/GameTable'
 import ButtonsBar from './ButtonsBar'
-import { useSelector } from 'react-redux';
-import { selectUUID } from '../../redux/authSlice';
+
 import WrongWalletWarningBanner from '../../components/Banners/WrongWalletWarningBanner';
+import { Button } from '@chakra-ui/react';
+import { ToastContext } from '../../context/ToastContext';
 
-export default function Game({ serverGameData, onChainGameData, connectedWalletAddress }) {
-  const uuid = useSelector(selectUUID);
+export default function Game({
+  uuid,
+  serverGameData,
+  onChainGameData,
+  connectedWalletAddress,
+  isArbiter,
+}) {
+  const toast = useContext(ToastContext);
 
-  const [walletIsWrong, setWalletIsWrong] = useState(false);
-
-  const [player2Joined, setPlayer2Joined] = useState(false);
-  const [isHost, setIsHost] = useState(false);
-  const [isPlayer2, setIsPlayer2] = useState(false);
-  const [isArbiter, setIsArbiter] = useState(false);
-
-  useEffect(() => {
-    setPlayer2Joined(Boolean(serverGameData.player2));
-  }, [serverGameData.player2]);
-  useEffect(() => {
-    setIsHost(uuid === serverGameData.host.uuid);
-  }, [uuid, serverGameData.host.uuid]);
-  useEffect(() => {
-    setIsPlayer2(uuid === serverGameData.player2?.uuid);
-  }, [uuid, serverGameData.player2]);
-  useEffect(() => {
-    setIsArbiter(connectedWalletAddress === import.meta.env.VITE_ARBITER_ADDRESS.toLowerCase());
-  }, [connectedWalletAddress]);
-
-  useEffect(() => {
-    setWalletIsWrong(
-      isHost && connectedWalletAddress != onChainGameData.host
-      || isPlayer2 && connectedWalletAddress != onChainGameData.player2
-    );
-  }, [isHost, isPlayer2, connectedWalletAddress, onChainGameData.host, onChainGameData.player2]);
+  const player2Joined = Boolean(serverGameData.player2);
+  const isHost = uuid === serverGameData.host.uuid;
+  const isPlayer2 = uuid === serverGameData.player2?.uuid;
+  const walletIsWrong = isHost && connectedWalletAddress != onChainGameData.host
+    || isPlayer2 && connectedWalletAddress != onChainGameData.player2;
 
 
   return <>
     {walletIsWrong && <WrongWalletWarningBanner
-     rightAddress={isHost ? onChainGameData.host : onChainGameData.player2} 
-     />}
+      rightAddress={isHost ? onChainGameData.host : onChainGameData.player2}
+    />}
     <ButtonsBar
       walletIsWrong={walletIsWrong}
       isHost={isHost}
@@ -50,6 +36,14 @@ export default function Game({ serverGameData, onChainGameData, connectedWalletA
       gameStarted={onChainGameData.started}
       disagreementReached={onChainGameData.disagreement}
     />
+    <Button onClick={() => toast({
+      title: 'test toast',
+      description: 'testing testing',
+      status: 'warning',
+      duration: 9000,
+      isClosable: true,
+      position: 'top',
+    })}>toast</Button>
     <GameTable
       walletIsWrong={walletIsWrong}
       serverGameData={serverGameData}

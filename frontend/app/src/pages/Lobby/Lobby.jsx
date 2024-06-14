@@ -1,32 +1,35 @@
-import { Button, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
+import LobbyTable from "../../components/GamesTables/LobbyTable";
+import { useGetLobbyGamesQuery } from "../../redux/api";
+import Preloader from "../../components/Preloader/Preloader";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { selectLobbyGamesPageSize, selectLobbyGames, selectTotalGamesCount } from "../../redux/gamesSlice";
+import Paginator from "../../components/common/Paginator";
+import SomeError from "../../components/SomeError/SomeError";
 
 export default function Lobby() {
+  const [pageNumber, setPageNumber] = useState(1);
+  const pageSize = useSelector(selectLobbyGamesPageSize);
+
+  const { isLoading, error } = useGetLobbyGamesQuery(
+    { pageNumber, pageSize },
+    { refetchOnMountOrArgChange: true },
+  );
+  const games = useSelector(selectLobbyGames);
+  const totalGamesCount = useSelector(selectTotalGamesCount);
+
+  if (isLoading) return <Preloader />
+  if (error) return <SomeError error={error} />
+
   return (
-    <TableContainer>
-      <Table>
-        <Thead>
-          <Tr>
-            <Th>id</Th>
-            <Th>Game</Th>
-            <Th>Title</Th>
-            <Th>Players</Th>
-            <Th>Host</Th>
-            <Th>Host statistic </Th>
-            <Th></Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          <Tr>
-            <Td>#1</Td>
-            <Td>Civ V</Td>
-            <Td>duel all dlc</Td>
-            <Td>1 / 2</Td>
-            <Td>J. Galt</Td>
-            <Td>325/214/42</Td>
-            <Td><Button colorScheme="yellow">Enter</Button></Td>
-          </Tr>
-        </Tbody>
-      </Table>
-    </TableContainer>
+    <>
+      <LobbyTable games={games} />
+      <Paginator
+        currentPageNumber={pageNumber}
+        pageSize={pageSize}
+        totalItemsCount={totalGamesCount}
+        onPageChange={(pN) => setPageNumber(pN)}
+      />
+    </>
   )
 }

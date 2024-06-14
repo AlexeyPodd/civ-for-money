@@ -3,7 +3,7 @@ import { Button, Badge, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "
 export default function GamesTable() {
   return (
     <TableContainer>
-      <Table>
+      <Table size='sm'>
         <Thead>
           <Tr>
             <Th>id</Th>

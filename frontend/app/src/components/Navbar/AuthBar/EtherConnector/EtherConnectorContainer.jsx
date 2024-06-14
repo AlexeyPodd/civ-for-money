@@ -6,7 +6,7 @@ import EtherConnector from "./EtherConnector";
 import provider from '../../../../ethereumAPI/provider'
 import { useRegisterUserWalletMutation } from "../../../../redux/api";
 import { useDispatch, useSelector } from "react-redux";
-import { selectWalletConnected, setWalletConnected } from "../../../../redux/authSlice";
+import { selectWalletConnected, setWalletConnected, setWalletDisconnected } from "../../../../redux/authSlice";
 
 
 export default function EtherConnectorContainer() {
@@ -33,14 +33,14 @@ export default function EtherConnectorContainer() {
   }
 
   function disconnect() {
-    dispatch(setWalletConnected(false));
+    dispatch(setWalletDisconnected());
     setSigner(null);
     window.ethereum.removeAllListeners();
   }
 
   async function connect() {
     setIsConnecting(true);
-    dispatch(setWalletConnected(false));
+    dispatch(setWalletDisconnected());
     const s = await provider.getSigner();
     setSigner(s);
 
@@ -76,7 +76,7 @@ export default function EtherConnectorContainer() {
 
   useEffect(() => {
     if (isSuccess) {
-      dispatch(setWalletConnected(true));
+      dispatch(setWalletConnected(signer.address.toLowerCase()));
     }
   }, [isSuccess]);
 

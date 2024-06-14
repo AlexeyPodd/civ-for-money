@@ -12,19 +12,7 @@ export default function useFetchOnChainGameData(signer, gameID) {
         setIsFetchingOnChainGameData(true);
         const contractAPI = new DuelContractAPIManager(signer, Number(gameID));
         const data = await contractAPI.getGameData();
-        const formattedData = {
-          host: data.host.toLowerCase(),
-          player2: data.player2.toLowerCase(),
-          bet: Number(data.bet),
-          timeStart: Number(data.timeStart),
-          playPeriod: Number(data.playPeriod),
-          started: data.started,
-          closed: data.closed,
-          disagreement: data.disagreement,
-          hostVote: Number(data.hostVote),
-          player2Vote: Number(data.player2Vote),
-        }
-        dispatch(onChainGameDataFetched(formattedData));
+        dispatch(onChainGameDataFetched(data));
         setIsFetchingOnChainGameData(false);
       }
 

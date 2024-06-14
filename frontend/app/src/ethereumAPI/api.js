@@ -23,7 +23,27 @@ export default class DuelContractAPIManager {
   }
 
   async getGameData() {
-    return await this.contract.games(this.gameIndex);
+    const data = await this.contract.games(this.gameIndex);
+    const formattedData = {
+      host: data.host.toLowerCase(),
+      player2: data.player2.toLowerCase(),
+      bet: Number(data.bet),
+      timeStart: Number(data.timeStart),
+      playPeriod: Number(data.playPeriod),
+      started: data.started,
+      closed: data.closed,
+      disagreement: data.disagreement,
+      hostVote: Number(data.hostVote),
+      player2Vote: Number(data.player2Vote),
+    }
+    return formattedData;
+  }
+
+  async addEventListener(event, listener) {
+    this.contract.on(event, listener);
+  }
+  async removeEventListener(event, listener) {
+    this.contract.off(event, listener);
   }
 
   // async join() {

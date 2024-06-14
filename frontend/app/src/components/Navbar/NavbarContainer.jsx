@@ -1,9 +1,9 @@
 import { useSelector } from "react-redux";
 import Navbar from "./Navbar";
-import { selectIsStaff } from "../../redux/authSlice";
+import { selectIsArbiter } from "../../redux/authSlice";
 
 export default function NavbarContainer() {
-  const userIsStuff = useSelector(selectIsStaff);
+  const userIsArbiter = useSelector(selectIsArbiter);
 
-  return <Navbar userIsStuff={userIsStuff} />
+  return <Navbar userIsArbiter={userIsArbiter} />
 }

@@ -2,7 +2,7 @@ import { Flex, Heading, HStack, Link } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
 import AuthBarContainer from "./AuthBar/AuthBarContainer";
 
-export default function Navbar({userIsStuff}) {
+export default function Navbar({userIsArbiter}) {
   const FlexNavStyles = {
     h: "100%",
     p: "15px",
@@ -31,7 +31,7 @@ export default function Navbar({userIsStuff}) {
         <Link as={NavLink} to="/new-game" sx={NavLinkStyles} >
           <Flex sx={FlexNavStyles} >Host</Flex>
         </Link>
-        {userIsStuff
+        {userIsArbiter
           && <Link as={NavLink} to="/disputes" sx={NavLinkStyles} >
             <Flex sx={FlexNavStyles} >Disputes</Flex>
           </Link>

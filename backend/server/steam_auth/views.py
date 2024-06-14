@@ -42,7 +42,6 @@ def login(request):
         'token': token.key,
         'avatar': user_data['avatar'],
         'username': user_data['personaname'],
-        'isStaff': user.is_staff,
     })
 
 
@@ -67,7 +66,6 @@ def get_user_data(request):
         'uuid': request.user.uuid,
         'avatar': user_data['avatar'],
         'username': user_data['personaname'],
-        'isStaff': request.user.is_staff,
     })
 
 

@@ -1,13 +1,14 @@
-from datetime import datetime
+from datetime import timedelta
 
 from rest_framework import mixins, status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
 from steam_auth.models import Wallet
 from .models import Rules, Game
+from .pagination import GameListPagination
 from .permissions import RulesPermission
 from .serializers import RulesSerializer, GameReadSerializer, GameWriteSerializer
 from .web3.api import DuelsSmartContractViewAPI
@@ -54,9 +55,10 @@ class GameViewSet(mixins.CreateModelMixin,
     permission_classes = (IsAuthenticatedOrReadOnly,)
     queryset = Game.objects.all()
     lookup_field = 'game_index'
+    pagination_class = GameListPagination
 
     def get_serializer_class(self):
-        if self.action in ['list', 'retrieve']:
+        if self.action in ['list', 'retrieve', 'lobby']:
             return GameReadSerializer
         else:
             return GameWriteSerializer
@@ -73,11 +75,6 @@ class GameViewSet(mixins.CreateModelMixin,
         except ValueError:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        if contract_view.timeStart:
-            time_expire = datetime.fromtimestamp(contract_view.timeStart + contract_view.playPeriod)
-        else:
-            time_expire = None
-
         host_wallet, created = Wallet.objects.get_or_create(owner=request.user, address=contract_view.host)
 
         game_data = {
@@ -90,10 +87,23 @@ class GameViewSet(mixins.CreateModelMixin,
             'dispute': contract_view.dispute,
             'host_vote': contract_view.hostVote,
             'player2_vote': contract_view.player2Vote,
-            'time_expire': time_expire,
+            'play_period': timedelta(seconds=contract_view.playPeriod),
+            'time_start': None,
         }
 
         serializer = self.get_serializer(data=game_data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(methods=['GET'], detail=False)
+    def lobby(self, request):
+        queryset = Game.objects.filter(player2__isnull=True)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)

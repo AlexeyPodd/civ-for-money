@@ -3,6 +3,7 @@ import secondsDurationToRepresentation from "../../utils/secondsDurationToRepres
 import timestampToDateRepresentation from "../../utils/timestampToDateRepresentation";
 
 export default function GameTable({
+  walletIsWrong,
   serverGameData,
   onChainGameData,
   isHost,
@@ -74,8 +75,8 @@ export default function GameTable({
           <Tr>
             <Td>Status</Td>
             <Td>
-              {!onChainGameData.started && !onChainGameData.player2 && "Waiting for second player to connect"}
-              {!onChainGameData.started && onChainGameData.player2 && "Waiting for host to start the game"}
+              {!onChainGameData.started && !player2Joined && "Waiting for second player to connect"}
+              {!onChainGameData.started && player2Joined && "Waiting for host to start the game"}
               {onChainGameData.started && !onChainGameData.closed && !onChainGameData.dispute && "The game is on now"}
               {onChainGameData.started && !onChainGameData.closed && onChainGameData.dispute && "Dispute about result"}
               {onChainGameData.closed && "Game is finished"}

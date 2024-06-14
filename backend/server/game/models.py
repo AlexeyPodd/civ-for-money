@@ -24,8 +24,9 @@ class Game(models.Model):
     started = models.BooleanField(default=False)
     closed = models.BooleanField(default=False)
     dispute = models.BooleanField(default=False)
-    time_expire = models.DateTimeField(null=True, blank=True)
     time_creation = models.DateTimeField("creation time", auto_now_add=True)
+    play_period = models.DurationField()
+    time_start = models.DateTimeField(null=True, blank=True)
     host_vote = models.PositiveSmallIntegerField(choices=Vote, default=Vote.NOT_VOTED)
     player2_vote = models.PositiveSmallIntegerField(choices=Vote, default=Vote.NOT_VOTED)
 

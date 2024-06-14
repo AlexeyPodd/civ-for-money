@@ -1,21 +1,27 @@
 import { Outlet } from "react-router-dom";
 import NavbarContainer from "../components/Navbar/NavbarContainer";
-import { Container, Flex } from "@chakra-ui/react";
+import { Container, Flex, useToast } from "@chakra-ui/react";
 import Footer from "../components/Footer/Footer";
 import { SignerContext } from "../context/SignerContext";
 import { useState } from "react";
+import { ToastContext } from "../context/ToastContext";
 
 export default function RootLayout() {
   const [signer, setSigner] = useState();
+  const toast = useToast();
+
   return (
-    <Flex minHeight="100vh" flexDirection="column">
-      <SignerContext.Provider value={{ signer, setSigner }}>
-        <NavbarContainer />
-        <Container maxWidth="8xl" mb="40px">
-          <Outlet />
-        </Container>
-      </SignerContext.Provider>
-      <Footer />
-    </Flex>
+      <Flex minHeight="100vh" flexDirection="column">
+        <SignerContext.Provider value={{ signer, setSigner }}>
+          <ToastContext.Provider value={toast}>
+            <NavbarContainer />
+            <Container maxWidth="8xl">
+              <Outlet />
+            </Container>
+          </ToastContext.Provider>
+        </SignerContext.Provider>
+        <Footer />
+      </Flex>
+
   )
 }
