@@ -3,11 +3,13 @@ import re
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from game.web3.utils import recover_address
 from .models import User, Wallet
+from .serializers import UserSerializer
 from .steam_requests import validate_steam_login, get_steam_user_data
 
 
@@ -53,20 +55,43 @@ def logout(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def get_user_data(request):
-    user_data = get_steam_user_data(request.user.uuid)
+    """
+    Returns avatar and username on given uuid parameter.
+    If uuid was not given - returns uuid, avatar and username of requester (if he is authenticated).
+    """
+    uuid = request.GET.get('uuid', '')
 
-    if request.user.username != user_data['personaname'] or request.user.avatar != user_data['avatar']:
-        request.user.username = user_data['personaname']
-        request.user.avatar = user_data['avatar']
-        request.user.save()
+    if not uuid:
+        if not request.user.is_authenticated:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    return Response({
-        'uuid': request.user.uuid,
-        'avatar': user_data['avatar'],
-        'username': user_data['personaname'],
-    })
+        user = request.user
+        uuid = request.user.uuid
+
+    else:
+        try:
+            uuid = int(uuid)
+        except ValueError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        user = get_object_or_404(User, uuid=uuid)
+
+    user_data = get_steam_user_data(uuid)
+
+    serializer = UserSerializer(
+        user,
+        data={
+            'username': user_data['personaname'],
+            'avatar': user_data['avatar'],
+            'avatar_full': user_data['avatarfull'],
+        },
+        partial=True,
+    )
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+
+    return Response(serializer.data)
 
 
 @api_view(['POST'])

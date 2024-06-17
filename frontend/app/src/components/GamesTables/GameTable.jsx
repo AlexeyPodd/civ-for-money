@@ -1,6 +1,7 @@
 import { Button, Table, TableContainer, Tbody, Td, Th, Thead, Tr, Link, Image, Text } from "@chakra-ui/react";
 import secondsDurationToRepresentation from "../../utils/secondsDurationToRepresentation";
 import timestampToDateRepresentation from "../../utils/timestampToDateRepresentation";
+import { useNavigate } from "react-router-dom";
 
 export default function GameTable({
   walletIsWrong,
@@ -12,6 +13,7 @@ export default function GameTable({
   gameStarted,
 }) {
   const votes = ["Not Voted", "Victory", "Loss", "Draw"]
+  const navigate = useNavigate();
 
   return (
     <TableContainer>
@@ -34,24 +36,28 @@ export default function GameTable({
           <Tr>
             <Td>Host</Td>
             <Td>
-              <Link href={`https://steamcommunity.com/profiles/${serverGameData.host.uuid}/`} isExternal >
-                <Button colorScheme="green" >
-                  <Image borderRadius='full' src={serverGameData.host.avatar} alt='avatar' />
-                  <Text ms='10px'>{serverGameData.host.username}</Text>
-                </Button>
-              </Link>
+              <Button colorScheme="green" onClick={() => navigate(`/profile/${serverGameData.host.uuid}`)}>
+                <Image borderRadius='full' src={serverGameData.host.avatar} alt='avatar' />
+                <Text ms='10px'>{
+                  serverGameData.host.username.length > 13
+                    ? serverGameData.host.username.slice(0, 10) + "..."
+                    : serverGameData.host.username
+                }</Text>
+              </Button>
             </Td>
           </Tr>
           <Tr>
             <Td>Second Player</Td>
             <Td>
               {serverGameData.player2
-                && <Link href={`https://steamcommunity.com/profiles/${serverGameData.player2.uuid}/`} isExternal >
-                  <Button colorScheme="green" >
-                    <Image borderRadius='full' src={serverGameData.player2.avatar} alt='avatar' />
-                    <Text>{serverGameData.player2.username}</Text>
-                  </Button>
-                </Link>
+                && <Button colorScheme="green" onClick={() => navigate(`/profile/${serverGameData.player2.uuid}`)}>
+                  <Image borderRadius='full' src={serverGameData.player2.avatar} alt='avatar' />
+                  <Text ms='10px'>{
+                  serverGameData.player2.username.length > 13
+                    ? serverGameData.player2.username.slice(0, 10) + "..."
+                    : serverGameData.player2.username
+                }</Text>
+                </Button>
               }
               {!player2Joined && !isHost
                 && <Button ms='5px' colorScheme="blue">Join</Button>

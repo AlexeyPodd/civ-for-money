@@ -17,6 +17,7 @@ import store from './redux/store.js'
 import UseInitiation from "./hooks/useInitiation.js";
 import MyGamesContainer from "./pages/MyGames/MyGamesContainer.jsx";
 import NewGameContainer from "./pages/NewGame/NewGameContainer.jsx";
+import Profile from "./pages/Profile/Profile.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -27,6 +28,7 @@ const router = createBrowserRouter(
       <Route path="new-game" element={<NewGameContainer />} />
       <Route path="disputes" element={<Disputes />} />
       <Route path="login" element={<Login />} />
+      <Route path="profile/:uuid" element={<Profile />} />
       <Route path="/*" element={<div>404 NOT FOUND</div>} />
     </Route>
   )

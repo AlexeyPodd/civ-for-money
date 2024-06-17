@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { selectAvatar, selectIsAuth, selectUsername, selectIsLoggingIn, setWalletConnected } from "../../../redux/authSlice";
+import { selectAvatar, selectIsAuth, selectUsername, selectUUID, selectIsLoggingIn, setWalletConnected } from "../../../redux/authSlice";
 import AuthBar from "./AuthBar";
 
 import { useLogoutMutation } from "../../../redux/api";
@@ -11,6 +11,7 @@ export default function AuthBarContainer() {
   const isAuth = useSelector(selectIsAuth);
   const username = useSelector(selectUsername);
   const avatar = useSelector(selectAvatar);
+  const uuid = useSelector(selectUUID);
   const isLoggingIn = useSelector(selectIsLoggingIn);
   const { setSigner } = useContext(SignerContext);
   const dispatch = useDispatch();
@@ -31,6 +32,7 @@ export default function AuthBarContainer() {
   return <AuthBar
     isAuth={isAuth}
     avatar={avatar}
+    uuid={uuid}
     username={username}
     logout={logout}
     isLoggingIn={isLoggingIn}

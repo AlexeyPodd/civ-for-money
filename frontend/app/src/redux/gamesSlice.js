@@ -5,7 +5,7 @@ const gamesSlice = createSlice({
   name: 'games',
   initialState: {
     lobbyGames: {
-      pageSize: 10,
+      pageSize: 12,
       totalGamesCount: 0,
       games: [],
     },
@@ -25,7 +25,11 @@ const gamesSlice = createSlice({
       games: [],
     },
   },
-  reducers: {},
+  reducers: {
+    clearLobbyGames: state => {
+      state.lobbyGames.games = [];
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addMatcher(
@@ -42,8 +46,8 @@ export const selectLobbyGamesPageSize = state => state.games.lobbyGames.pageSize
 export const selectLobbyGames = state => state.games.lobbyGames.games;
 export const selectTotalGamesCount = state => state.games.lobbyGames.totalGamesCount;
 
-// export const {
-
-// } = gamesSlice.actions;
+export const {
+  clearLobbyGames,
+} = gamesSlice.actions;
 
 export default gamesSlice.reducer;

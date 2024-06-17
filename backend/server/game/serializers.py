@@ -1,7 +1,6 @@
 from rest_framework import serializers
-from rest_framework.fields import ChoiceField
 
-from steam_auth.models import User, Wallet
+from steam_auth.serializers import WalletSerializer
 from .models import Rules, Game
 
 
@@ -11,20 +10,6 @@ class RulesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rules
         fields = ('id', 'title', 'description', 'creator')
-
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('uuid', 'username', 'avatar', 'victories', 'defeats', 'draws', 'banned')
-
-
-class WalletSerializer(serializers.ModelSerializer):
-    owner = UserSerializer(read_only=True)
-
-    class Meta:
-        model = Wallet
-        fields = ('owner', 'address')
 
 
 class GameReadSerializer(serializers.ModelSerializer):

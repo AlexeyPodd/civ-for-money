@@ -44,6 +44,9 @@ export const api = createApi({
     getUserData: build.query({
       query: () => '/auth/user-data/',
     }),
+    getAnotherUserData: build.query({
+      query: (uuid) => `/auth/user-data/?uuid=${uuid}`,
+    }),
     registerUserWallet: build.mutation({
       query: ({ message, signature }) => ({
         url: '/auth/register-wallet/',
@@ -106,6 +109,7 @@ export const {
   useLoginMutation,
   useLogoutMutation,
   useGetUserDataQuery,
+  useGetAnotherUserDataQuery,
   useRegisterUserWalletMutation,
   useGetUserRulesQuery,
   useCreateRuleMutation,

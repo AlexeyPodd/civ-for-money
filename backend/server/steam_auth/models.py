@@ -5,12 +5,16 @@ from django.db import models
 
 class User(AbstractUser):
     """Overrides the standard user by adding fields"""
+    username = models.CharField(max_length=32)
     uuid = models.CharField(max_length=17, null=True, unique=True, validators=[RegexValidator(regex=r'^\d{17}$')])
     avatar = models.URLField(max_length=128, blank=True)
+    avatar_full = models.URLField(max_length=128, blank=True)
     victories = models.PositiveSmallIntegerField(default=0)
     defeats = models.PositiveSmallIntegerField(default=0)
     draws = models.PositiveSmallIntegerField(default=0)
     banned = models.BooleanField(default=False)
+
+    USERNAME_FIELD = "uuid"
 
     def __str__(self):
         return self.username
