@@ -1,12 +1,14 @@
 from datetime import timedelta
 
+from django.db.models import Q
 from rest_framework import mixins, status
 from rest_framework.decorators import api_view, permission_classes, action
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
-from steam_auth.models import Wallet
+from steam_auth.models import Wallet, User
 from .models import Rules, Game
 from .pagination import GameListPagination
 from .permissions import RulesPermission
@@ -98,8 +100,53 @@ class GameViewSet(mixins.CreateModelMixin,
 
     @action(methods=['GET'], detail=False)
     def lobby(self, request):
-        queryset = Game.objects.filter(player2__isnull=True)
+        queryset = self.__get_list_queryset('lobby', None)
+        return self.__get_paginated_response(queryset)
 
+    @action(methods=['GET'], detail=False)
+    def user_actual_games(self, request):
+        try:
+            uuid = int(self.request.query_params.get('uuid', ''))
+        except ValueError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        user = get_object_or_404(User, uuid=uuid)
+
+        queryset = self.__get_list_queryset('user_actual', user)
+        print('here')
+        return self.__get_paginated_response(queryset)
+
+    @action(methods=['GET'], detail=False)
+    def user_closed_games(self, request):
+        try:
+            uuid = int(self.request.query_params.get('uuid', ''))
+        except ValueError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        user = get_object_or_404(User, uuid=uuid)
+
+        queryset = self.__get_list_queryset('user_closed', user)
+        return self.__get_paginated_response(queryset)
+
+    @action(methods=['GET'], detail=False)
+    def disputed_games(self, request):
+        queryset = self.__get_list_queryset('disputed_not_closed', None)
+        return self.__get_paginated_response(queryset)
+
+    def __get_list_queryset(self, kind, user):
+        match kind:
+            case "lobby":
+                return Game.objects.filter(player2__isnull=True)
+            case "user_actual":
+                return Game.objects.filter(Q(host__owner=user) | Q(player2__owner=user), closed=False)
+            case "user_closed":
+                return Game.objects.filter(Q(host__owner=user) | Q(player2__owner=user), closed=True)
+            case "disputed_not_closed":
+                return Game.objects.filter(dispute=True, closed=False)
+            case _:
+                raise ValueError("wrong kind of list queryset")
+
+    def __get_paginated_response(self, queryset):
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)

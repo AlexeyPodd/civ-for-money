@@ -6,7 +6,7 @@ from .models import User, Wallet, PreBanWarning
 class WarningSerializer(serializers.ModelSerializer):
     class Meta:
         model = PreBanWarning
-        fields = ('reason', 'time_creation')
+        fields = ('id', 'reason', 'time_creation')
 
 
 class UserSerializer(serializers.ModelSerializer):

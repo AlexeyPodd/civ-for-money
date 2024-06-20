@@ -4,11 +4,11 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 
 from game.web3.utils import recover_address
-from .models import User, Wallet
+from .models import User, Wallet, PreBanWarning
 from .serializers import UserSerializer
 from .steam_requests import validate_steam_login, get_steam_user_data
 
@@ -108,3 +108,49 @@ def register_wallet(request):
         wallet = Wallet.objects.create(address=address, owner=request.user)
 
     return Response({'address': address, 'uuid': wallet.owner.uuid, 'created': not existed})
+
+
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
+def ban_user(request):
+    try:
+        uuid = int(request.data.get('uuid', ''))
+    except ValueError:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    user = get_object_or_404(User, uuid=uuid)
+    user.banned = True
+    user.save()
+
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
+def unban_user(request):
+    try:
+        uuid = int(request.data.get('uuid', ''))
+    except ValueError:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    user = get_object_or_404(User, uuid=uuid)
+    user.banned = False
+    user.save()
+
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
+def warn_user(request):
+    try:
+        uuid = int(request.data.get('uuid', ''))
+    except ValueError:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    warning_description = request.data.get('description', '')
+    user = get_object_or_404(User, uuid=uuid)
+
+    PreBanWarning.objects.create(user=user, reason=warning_description, creator=request.user)
+
+    return Response(status=status.HTTP_204_NO_CONTENT)

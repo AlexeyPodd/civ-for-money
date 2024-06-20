@@ -18,6 +18,7 @@ import UseInitiation from "./hooks/useInitiation.js";
 import MyGamesContainer from "./pages/MyGames/MyGamesContainer.jsx";
 import NewGameContainer from "./pages/NewGame/NewGameContainer.jsx";
 import Profile from "./pages/Profile/Profile.jsx";
+import UserGames from "./pages/UserGames/UserGames.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -29,6 +30,7 @@ const router = createBrowserRouter(
       <Route path="disputes" element={<Disputes />} />
       <Route path="login" element={<Login />} />
       <Route path="profile/:uuid" element={<Profile />} />
+      <Route path="profile/:uuid/games" element={<UserGames />} />
       <Route path="/*" element={<div>404 NOT FOUND</div>} />
     </Route>
   )

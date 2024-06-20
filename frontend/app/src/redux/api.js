@@ -47,6 +47,27 @@ export const api = createApi({
     getAnotherUserData: build.query({
       query: (uuid) => `/auth/user-data/?uuid=${uuid}`,
     }),
+    banUser: build.mutation({
+      query: (uuid) => ({
+        url: `auth/ban/`,
+        method: 'POST',
+        body: {uuid},
+      })
+    }),
+    unbanUser: build.mutation({
+      query: (uuid) => ({
+        url: `auth/unban/`,
+        method: 'POST',
+        body: {uuid},
+      })
+    }),
+    warnUser: build.mutation({
+      query: ({uuid, description}) => ({
+        url: '/auth/warn-user/',
+        method: 'POST',
+        body: {uuid, description},
+      })
+    }),
     registerUserWallet: build.mutation({
       query: ({ message, signature }) => ({
         url: '/auth/register-wallet/',
@@ -99,8 +120,20 @@ export const api = createApi({
       query: (gameID) => `/games/${gameID}/`,
     }),
     getLobbyGames: build.query({
-      query: ({ pageNumber = 1, pageSize = 30 }) =>
+      query: ({ pageNumber = 1, pageSize = 12 }) =>
         `/games/lobby/?page_number=${pageNumber}&page_size=${pageSize}`,
+    }),
+    getUserActualGames: build.query({
+      query: ({ uuid, pageNumber = 1, pageSize = 12 }) =>
+        `/games/user_actual_games/?uuid=${uuid}&page_number=${pageNumber}&page_size=${pageSize}`,
+    }),
+    getUserClosedGames: build.query({
+      query: ({ uuid, pageNumber = 1, pageSize = 12 }) =>
+        `/games/user_closed_games/?uuid=${uuid}&page_number=${pageNumber}&page_size=${pageSize}`,
+    }),
+    getDisputedGames: build.query({
+      query: ({ pageNumber = 1, pageSize = 12 }) =>
+        `/games/disputed_games/?page_number=${pageNumber}&page_size=${pageSize}`,
     }),
   }),
 });
@@ -110,6 +143,9 @@ export const {
   useLogoutMutation,
   useGetUserDataQuery,
   useGetAnotherUserDataQuery,
+  useBanUserMutation,
+  useUnbanUserMutation,
+  useWarnUserMutation,
   useRegisterUserWalletMutation,
   useGetUserRulesQuery,
   useCreateRuleMutation,
@@ -119,4 +155,7 @@ export const {
   useCreateGameMutation,
   useGetGameQuery,
   useGetLobbyGamesQuery,
+  useGetUserActualGamesQuery,
+  useGetUserClosedGamesQuery,
+  useGetDisputedGamesQuery,
 } = api;
