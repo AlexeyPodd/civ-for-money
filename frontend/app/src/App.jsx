@@ -15,7 +15,7 @@ import { ChakraProvider } from '@chakra-ui/react'
 import { Provider } from 'react-redux'
 import store from './redux/store.js'
 import UseInitiation from "./hooks/useInitiation.js";
-import MyGamesContainer from "./pages/MyGames/MyGamesContainer.jsx";
+import MyGames from "./pages/MyGames/MyGames.jsx";
 import NewGameContainer from "./pages/NewGame/NewGameContainer.jsx";
 import Profile from "./pages/Profile/Profile.jsx";
 import UserGames from "./pages/UserGames/UserGames.jsx";
@@ -24,7 +24,7 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<RootLayout />}>
       <Route index element={<Lobby />} />
-      <Route path="my-games" element={<MyGamesContainer />} />
+      <Route path="my-games" element={<MyGames />} />
       <Route path="game/:gameID" element={<GameContainer />} />
       <Route path="new-game" element={<NewGameContainer />} />
       <Route path="disputes" element={<Disputes />} />

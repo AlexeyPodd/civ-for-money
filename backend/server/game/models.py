@@ -29,6 +29,7 @@ class Game(models.Model):
     time_start = models.DateTimeField(null=True, blank=True)
     host_vote = models.PositiveSmallIntegerField(choices=Vote, default=Vote.NOT_VOTED)
     player2_vote = models.PositiveSmallIntegerField(choices=Vote, default=Vote.NOT_VOTED)
+    winner = models.ForeignKey(Wallet, on_delete=models.CASCADE, null=True, blank=True, related_name='won_games')
 
     class Meta:
         ordering = ['time_creation']

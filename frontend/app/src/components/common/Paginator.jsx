@@ -13,8 +13,8 @@ export default function Paginator({
     pageNumbers.push(i);
   }
 
-  return (
-    <Box p='20px' textAlign='center'>
+  return (pagesCount > 1
+    && <Box pt='20px' textAlign='center'>
       {pagesCount > 4
         && <IconButton
           aria-label="First page"
@@ -38,7 +38,7 @@ export default function Paginator({
         icon={<ChevronRightIcon />}
         mx='3px'
         onClick={() => onPageChange(currentPageNumber + 1)}
-        isDisabled={currentPageNumber === pagesCount}
+        isDisabled={currentPageNumber === pagesCount || totalItemsCount === 0}
       />
       {pagesCount > 4
         && <IconButton

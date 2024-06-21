@@ -1,20 +1,26 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
-import GamesTable from "../../components/GamesTables/GamesTable";
+import ActualGamesTableContainer from "./ActualGamesTableContainer";
+import ClosedGamesTableContainer from "./ClosedGamesTableContainer";
+import withLoginOffer from "../../hoc/withLoginOffer";
 
-export default function MyGames() {
-  return <Tabs colorScheme="yellow" p="20px" size="lg" variant="enclosed" >
-    <TabList>
-      <Tab _selected={{ color: "white", bg: "yellow.600" }}>Actual</Tab>
-      <Tab _selected={{ color: "white", bg: "yellow.600" }}>Closed</Tab>
-    </TabList>
+function MyGames() {
+  return (
+    <Tabs colorScheme="yellow" size="lg" variant="enclosed" >
+      <TabList>
+        <Tab _selected={{ color: "white", bg: "yellow.600" }}>Actual</Tab>
+        <Tab _selected={{ color: "white", bg: "yellow.600" }}>Closed</Tab>
+      </TabList>
 
-    <TabPanels>
-      <TabPanel>
-        <GamesTable />
-      </TabPanel>
-      <TabPanel>
-        <GamesTable />
-      </TabPanel>
-    </TabPanels>
-  </Tabs>
+      <TabPanels>
+        <TabPanel>
+          <ActualGamesTableContainer />
+        </TabPanel>
+        <TabPanel>
+          <ClosedGamesTableContainer />
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
+  )
 }
+
+export default withLoginOffer(MyGames);

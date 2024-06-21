@@ -60,7 +60,7 @@ class GameViewSet(mixins.CreateModelMixin,
     pagination_class = GameListPagination
 
     def get_serializer_class(self):
-        if self.action in ['list', 'retrieve', 'lobby']:
+        if self.action in ['list', 'retrieve', 'lobby', 'user_actual_games', 'user_closed_games', 'disputed_games']:
             return GameReadSerializer
         else:
             return GameWriteSerializer

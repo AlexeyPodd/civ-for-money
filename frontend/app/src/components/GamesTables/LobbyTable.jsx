@@ -28,13 +28,12 @@ export default function LobbyTable({ games }) {
               <Td>{g.game}</Td>
               <Td>{g.title}</Td>
               <Td>{`${g.bet / 10 ** 18} ETH`}</Td>
-              <Td>{secondsDurationToRepresentation(g.play_period)}</Td>
+              <Td>{secondsDurationToRepresentation(g.play_period / 1000)}</Td>
               <Td>{g.host.owner.username}</Td>
               <Td>{g.host.owner.victories}/{g.host.owner.defeats}/{g.host.owner.draws}</Td>
               <Td><Button colorScheme="yellow" onClick={() => navigate(`/game/${g.game_index}`)}>Game Page</Button></Td>
             </Tr>
           ))}
-
         </Tbody>
       </Table>
     </TableContainer>

@@ -5,7 +5,7 @@ import Preloader from "../../components/Preloader/Preloader";
 import SomeError from "../../components/SomeError/SomeError";
 import steamLoginImg from '../../assets/images/steam-icon.webp';
 import { useSelector } from "react-redux";
-import { selectIsArbiter } from "../../redux/authSlice";
+import { selectIsArbiter, selectUUID } from "../../redux/authSlice";
 import { WarningIcon } from "@chakra-ui/icons";
 import BanUserModal from "../../components/Modals/BanUserModal";
 import UnbanUserModal from "../../components/Modals/UnbanUserModal";
@@ -14,7 +14,9 @@ import WarnUserModal from "../../components/Modals/WarningModal";
 export default function Profile() {
   const navigate = useNavigate();
 
+  // const {selfUUID} = useSelector(selectUUID);
   const { uuid } = useParams();
+  
   const isArbiter = useSelector(selectIsArbiter);
 
   const { data, error, isLoading, refetch } = useGetAnotherUserDataQuery(uuid);
@@ -41,6 +43,9 @@ export default function Profile() {
           <Button colorScheme="green" onClick={() => navigate(`games`)} >
             User Games
           </Button>
+          {/* <Button colorScheme="green" onClick={() => navigate(selfUUID === uuid ? '/my-games' : 'games')} >
+            {selfUUID === uuid ? "My Games" : "User Games"}
+          </Button> */}
           {isArbiter && <Button isDisabled={data.banned} onClick={onWarningModalOpen} colorScheme="orange">Make Warning</Button>}
           {isArbiter && (data.banned
             ? <Button colorScheme="yellow" onClick={onUnbanModalOpen} >Unban User</Button>

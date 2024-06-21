@@ -3,7 +3,7 @@ import { useGetLobbyGamesQuery } from "../../redux/api";
 import Preloader from "../../components/Preloader/Preloader";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectLobbyGamesPageSize, selectLobbyGames, selectTotalGamesCount, clearLobbyGames } from "../../redux/gamesSlice";
+import { selectLobbyGamesPageSize, selectLobbyGames, selectTotalLobbyGamesCount, clearLobbyGames } from "../../redux/gamesSlice";
 import Paginator from "../../components/common/Paginator";
 import SomeError from "../../components/SomeError/SomeError";
 import { Button, HStack, Spacer } from "@chakra-ui/react";
@@ -20,7 +20,7 @@ export default function Lobby() {
     { refetchOnMountOrArgChange: true },
   );
   const games = useSelector(selectLobbyGames);
-  const totalGamesCount = useSelector(selectTotalGamesCount);
+  const totalGamesCount = useSelector(selectTotalLobbyGamesCount);
 
   if (isLoading) return <Preloader />
   if (error) return <SomeError error={error} />
