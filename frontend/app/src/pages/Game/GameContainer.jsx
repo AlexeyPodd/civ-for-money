@@ -11,7 +11,7 @@ import withLoginOffer from "../../hoc/withLoginOffer";
 import withConnectWalletOffer from "../../hoc/withConnectWalletOffer";
 import { compose } from "@reduxjs/toolkit";
 import useFetchOnChainGameData from '../../hooks/useFetchOnChainGameData';
-import { selectIsArbiter, selectUUID } from '../../redux/authSlice';
+import { selectBanned, selectIsArbiter, selectUUID } from '../../redux/authSlice';
 
 
 function GameContainer() {
@@ -19,6 +19,7 @@ function GameContainer() {
   const { gameID } = useParams();
   const uuid = useSelector(selectUUID);
   const isArbiter = useSelector(selectIsArbiter);
+  const isBanned = useSelector(selectBanned);
 
   // fetching game data from server
   const { error, isLoading } = useGetGameQuery(gameID);

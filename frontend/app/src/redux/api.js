@@ -68,6 +68,13 @@ export const api = createApi({
         body: {uuid, description},
       })
     }),
+    checkUserWalletRegistration: build.mutation({
+      query: (address) => ({
+        url: '/auth/check-wallet-registration/',
+        method: 'POST',
+        body: { address },
+      })
+    }),
     registerUserWallet: build.mutation({
       query: ({ message, signature }) => ({
         url: '/auth/register-wallet/',
@@ -146,6 +153,7 @@ export const {
   useBanUserMutation,
   useUnbanUserMutation,
   useWarnUserMutation,
+  useCheckUserWalletRegistrationMutation,
   useRegisterUserWalletMutation,
   useGetUserRulesQuery,
   useCreateRuleMutation,

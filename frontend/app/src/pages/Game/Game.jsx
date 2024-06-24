@@ -13,6 +13,7 @@ export default function Game({
   onChainGameData,
   connectedWalletAddress,
   isArbiter,
+  isBanned,
 }) {
   const toast = useContext(ToastContext);
 
@@ -52,6 +53,7 @@ export default function Game({
       player2Joined={player2Joined}
       isPlayer2={isPlayer2}
       gameStarted={onChainGameData.started}
+      isBanned={isBanned}
     />
   </>
 }

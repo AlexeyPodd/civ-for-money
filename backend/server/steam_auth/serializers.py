@@ -24,3 +24,17 @@ class WalletSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wallet
         fields = ('owner', 'address')
+
+
+class UserShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('uuid', 'username', 'avatar', 'victories', 'defeats', 'draws')
+
+
+class WalletShortSerializer(serializers.ModelSerializer):
+    owner = UserShortSerializer(read_only=True)
+
+    class Meta:
+        model = Wallet
+        fields = ('owner', 'address')

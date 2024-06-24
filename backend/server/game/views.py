@@ -4,7 +4,7 @@ from django.db.models import Q
 from rest_framework import mixins, status
 from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
@@ -12,7 +12,7 @@ from steam_auth.models import Wallet, User
 from .models import Rules, Game
 from .pagination import GameListPagination
 from .permissions import RulesPermission
-from .serializers import RulesSerializer, GameReadSerializer, GameWriteSerializer
+from .serializers import RulesSerializer, GameReadSerializer, GameWriteSerializer, GameListReadSerializer
 from .web3.api import DuelsSmartContractViewAPI
 
 
@@ -60,10 +60,15 @@ class GameViewSet(mixins.CreateModelMixin,
     pagination_class = GameListPagination
 
     def get_serializer_class(self):
-        if self.action in ['list', 'retrieve', 'lobby', 'user_actual_games', 'user_closed_games', 'disputed_games']:
-            return GameReadSerializer
-        else:
-            return GameWriteSerializer
+        match self.action:
+            case 'list' | 'lobby' | 'user_actual_games' | 'user_closed_games' | 'disputed_games':
+                return GameListReadSerializer
+            case 'retrieve':
+                return GameReadSerializer
+            case 'create' | 'update':
+                return GameWriteSerializer
+            case _:
+                raise ValueError('no serializer for this request type')
 
     def create(self, request, *args, **kwargs):
         game_index = request.data['game_index']

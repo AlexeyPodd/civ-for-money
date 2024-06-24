@@ -14,9 +14,9 @@ import WarnUserModal from "../../components/Modals/WarningModal";
 export default function Profile() {
   const navigate = useNavigate();
 
-  // const {selfUUID} = useSelector(selectUUID);
+  const selfUUID = useSelector(selectUUID);
   const { uuid } = useParams();
-  
+
   const isArbiter = useSelector(selectIsArbiter);
 
   const { data, error, isLoading, refetch } = useGetAnotherUserDataQuery(uuid);
@@ -40,12 +40,9 @@ export default function Profile() {
               Steam Profile
             </Button>
           </Link>
-          <Button colorScheme="green" onClick={() => navigate(`games`)} >
-            User Games
-          </Button>
-          {/* <Button colorScheme="green" onClick={() => navigate(selfUUID === uuid ? '/my-games' : 'games')} >
+          <Button colorScheme="green" onClick={() => navigate(selfUUID === uuid ? '/my-games' : 'games')} >
             {selfUUID === uuid ? "My Games" : "User Games"}
-          </Button> */}
+          </Button>
           {isArbiter && <Button isDisabled={data.banned} onClick={onWarningModalOpen} colorScheme="orange">Make Warning</Button>}
           {isArbiter && (data.banned
             ? <Button colorScheme="yellow" onClick={onUnbanModalOpen} >Unban User</Button>

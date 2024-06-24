@@ -15,10 +15,11 @@ import { ChakraProvider } from '@chakra-ui/react'
 import { Provider } from 'react-redux'
 import store from './redux/store.js'
 import UseInitiation from "./hooks/useInitiation.js";
-import MyGames from "./pages/MyGames/MyGames.jsx";
+import UserGames from "./pages/UserGames/UserGames.jsx";
 import NewGameContainer from "./pages/NewGame/NewGameContainer.jsx";
 import Profile from "./pages/Profile/Profile.jsx";
-import UserGames from "./pages/UserGames/UserGames.jsx";
+import MyGames from "./pages/UserGames/MyGames.jsx";
+import Page404 from "./pages/Page404.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -31,7 +32,7 @@ const router = createBrowserRouter(
       <Route path="login" element={<Login />} />
       <Route path="profile/:uuid" element={<Profile />} />
       <Route path="profile/:uuid/games" element={<UserGames />} />
-      <Route path="/*" element={<div>404 NOT FOUND</div>} />
+      <Route path="/*" element={<Page404 />} />
     </Route>
   )
 )

@@ -44,6 +44,7 @@ def login(request):
         'token': token.key,
         'avatar': user_data['avatar'],
         'username': user_data['personaname'],
+        'banned': user.banned,
     })
 
 
@@ -96,18 +97,34 @@ def get_user_data(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+def check_wallet_registration(request):
+    """returns response with 4xx status if wallet is not associated with this steam account"""
+
+    address = request.data['address']
+    get_object_or_404(Wallet, address=address, owner=request.user)
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def register_wallet(request):
-    address = recover_address(request.data['message'], request.data['signature'])
+    """associates wallet address wth steam account"""
+
+    try:
+        address = recover_address(request.data['message'], request.data['signature'])
+    except:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     existed = Wallet.objects.filter(address=address).exists()
     if existed:
         wallet = Wallet.objects.get(address=address)
         if wallet.owner != request.user:
-            return Response({'detail': 'This address is associated to another Steam account.'}, status=status.HTTP_403_FORBIDDEN)
+            wallet.owner = request.user
+            wallet.save()
     else:
-        wallet = Wallet.objects.create(address=address, owner=request.user)
+        Wallet.objects.create(address=address, owner=request.user)
 
-    return Response({'address': address, 'uuid': wallet.owner.uuid, 'created': not existed})
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['POST'])

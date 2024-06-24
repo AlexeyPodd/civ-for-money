@@ -1,6 +1,6 @@
 import { Button, Badge, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import timestampToDateRepresentation from "../../utils/timestampToDateRepresentation";
+import timestampToDateRepresentation from "../../../utils/timestampToDateRepresentation";
 
 
 export default function ActualGamesTable({ games }) {

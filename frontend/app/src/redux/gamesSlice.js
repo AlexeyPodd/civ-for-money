@@ -20,7 +20,7 @@ const gamesSlice = createSlice({
       games: [],
     },
     disputeGames: {
-      pageSize: 10,
+      pageSize: 12,
       totalGamesCount: 0,
       games: [],
     },

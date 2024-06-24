@@ -11,6 +11,7 @@ const authSlice = createSlice({
     username: null,
     avatar: null,
     uuid: null,
+    banned: null,
   },
   reducers: {
     tokenGotten: state => {
@@ -45,6 +46,7 @@ const authSlice = createSlice({
           state.username = payload.username;
           state.avatar = payload.avatar;
           state.uuid = payload.uuid;
+          state.banned = payload.banned;
         }
       )
       .addMatcher(
@@ -54,6 +56,7 @@ const authSlice = createSlice({
           state.username = null;
           state.avatar = null;
           state.uuid = null;
+          state.banned = null;
         }
       )
       .addMatcher(
@@ -62,6 +65,7 @@ const authSlice = createSlice({
           state.username = payload.username;
           state.avatar = payload.avatar;
           state.uuid = payload.uuid;
+          state.banned = payload.banned;
         }
       )
   }
@@ -74,6 +78,7 @@ export const selectAvatar = (state) => state.auth.avatar;
 export const selectUUID = (state) => state.auth.uuid;
 export const selectIsLoggingIn = (state) => state.auth.isLoggingIn;
 export const selectIsArbiter = (state) => state.auth.isArbiter;
+export const selectBanned = (state) => state.auth.banned;
 
 export const {
   tokenGotten,

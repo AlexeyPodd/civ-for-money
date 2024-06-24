@@ -3,19 +3,23 @@ import { SignerContext } from "../../../../context/SignerContext";
 
 import EtherConnector from "./EtherConnector";
 
-import provider from '../../../../ethereumAPI/provider'
-import { useRegisterUserWalletMutation } from "../../../../redux/api";
+import provider from '../../../../ethereumAPI/provider';
+import { useCheckUserWalletRegistrationMutation, useRegisterUserWalletMutation } from "../../../../redux/api";
 import { useDispatch, useSelector } from "react-redux";
 import { selectWalletConnected, setWalletConnected, setWalletDisconnected } from "../../../../redux/authSlice";
+import { ToastContext } from "../../../../context/ToastContext";
 
 
 export default function EtherConnectorContainer() {
+  const toast = useContext(ToastContext);
+
   const { signer, setSigner } = useContext(SignerContext);
 
   const walletConnected = useSelector(selectWalletConnected);
   const dispatch = useDispatch();
 
-  const [registerUserWallet, { error, isError, isSuccess, isLoading: isRegistering }] = useRegisterUserWalletMutation();
+  const [checkWalletRegistered, { isSuccess: checkWalletRegistrationSuccess }] = useCheckUserWalletRegistrationMutation();
+  const [registerUserWallet, { error, isError, isSuccess: walletRegistrationSuccess, isLoading: isRegistering }] = useRegisterUserWalletMutation();
 
   const [isConnecting, setIsConnecting] = useState(false);
 
@@ -44,18 +48,35 @@ export default function EtherConnectorContainer() {
     const s = await provider.getSigner();
     setSigner(s);
 
-    const verifyAddressMessage = 'verify your address';
-    let signature;
     try {
-      signature = await s.signMessage(verifyAddressMessage);
+      // checking is wallet registered
+      await checkWalletRegistered(s.address).unwrap();
+    } catch (error) {
+      if (error.status === 404) {
+        // signing message to proof server that user is owner of wallet address
+        toast({
+          title: 'Your wallet address is not registered on server.',
+          description: 'Please sign message to proof that you are indeed an owner of this Ethereum address.',
+          status: 'warning',
+          duration: null,
+          position: 'top',
+        });
+        const verifyAddressMessage = 'verify your address';
+        let signature;
+        try {
+          signature = await s.signMessage(verifyAddressMessage);
+        }
+        catch (err) {
+          console.error(err);
+          toast.closeAll();
+        }
+        if (signature) registerUserWallet({
+          message: verifyAddressMessage,
+          signature: signature,
+        });
+      }
     }
-    catch (err) {
-      console.error(err);
-    }
-    if (signature) registerUserWallet({
-      message: verifyAddressMessage,
-      signature: signature,
-    });
+
     setIsConnecting(false);
   }
 
@@ -70,15 +91,23 @@ export default function EtherConnectorContainer() {
   useEffect(() => {
     if (isError) {
       disconnect();
-      alert(`Status ${error.status}\n${error.data}`);
+      toast.closeAll();
+      toast({
+        title: 'Error.',
+        description: 'Some error occurs while registering wallet.',
+        status: 'error',
+        isClosable: true,
+        position: 'top',
+      });
     }
   }, [isError, error]);
 
   useEffect(() => {
-    if (isSuccess) {
+    if (walletRegistrationSuccess || checkWalletRegistrationSuccess) {
       dispatch(setWalletConnected(signer.address.toLowerCase()));
+      toast.closeAll();
     }
-  }, [isSuccess]);
+  }, [walletRegistrationSuccess, checkWalletRegistrationSuccess]);
 
   return <EtherConnector
     walletConnected={walletConnected}

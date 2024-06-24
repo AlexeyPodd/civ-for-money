@@ -1,21 +1,18 @@
 import { useDispatch, useSelector } from "react-redux";
-import ActualGamesTable from "../../components/GamesTables/ActualGamesTable";
-import { selectUUID } from "../../redux/authSlice";
-import { clearUserGames, selectTotalUserGamesCount, selectUserGames, selectUserGamesPageSize } from "../../redux/gamesSlice";
-import { useGetUserActualGamesQuery } from "../../redux/api";
-import Preloader from "../../components/Preloader/Preloader";
-import SomeError from "../../components/SomeError/SomeError";
-import Paginator from "../../components/common/Paginator";
+import ActualGamesTable from "./ActualGamesTable";
+import { clearUserGames, selectTotalUserGamesCount, selectUserGames, selectUserGamesPageSize } from "../../../redux/gamesSlice";
+import { useGetUserActualGamesQuery } from "../../../redux/api";
+import Preloader from "../../Preloader/Preloader";
+import SomeError from "../../SomeError/SomeError";
+import Paginator from "../../common/Paginator";
 import { useState } from "react";
-import NoGamesBanner from "../../components/Banners/NoGamesBanner";
+import NoGamesBanner from "../../Banners/NoGamesBanner";
 
-export default function ActualGamesTableContainer() {
+export default function ActualGamesTableContainer({ uuid, isOwnGames }) {
   const dispatch = useDispatch();
 
   const [pageNumber, setPageNumber] = useState(1);
   const pageSize = useSelector(selectUserGamesPageSize);
-
-  const uuid = useSelector(selectUUID);
 
   const { isLoading, error } = useGetUserActualGamesQuery(
     { uuid, pageNumber, pageSize },
@@ -32,7 +29,7 @@ export default function ActualGamesTableContainer() {
   if (isLoading) return <Preloader />
   if (error) return <SomeError error={error} />
 
-  if (totalGamesCount === 0) return <NoGamesBanner gamesKind='actual' />
+  if (totalGamesCount === 0) return <NoGamesBanner gamesKind='actual' isOwnGames={isOwnGames} />
 
   return <>
     <ActualGamesTable games={games} />

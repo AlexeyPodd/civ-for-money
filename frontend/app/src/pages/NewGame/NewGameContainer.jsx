@@ -1,6 +1,7 @@
 import NewGame from "./NewGame";
 import withLoginOffer from "../../hoc/withLoginOffer";
 import withConnectWalletOffer from "../../hoc/withConnectWalletOffer";
+import withNotBanned from "../../hoc/withNotBanned";
 import { compose } from "@reduxjs/toolkit";
 import { useCreateGameMutation, useCreateRuleMutation, useDeleteRuleMutation, useGetGameTypesQuery, useGetUserRulesQuery, useUpdateRuleMutation } from "../../redux/api";
 import Preloader from "../../components/Preloader/Preloader"
@@ -18,9 +19,9 @@ function NewGameContainer() {
   const { error: gettingRulesListError, isLoading: isGettingRulesList } = useGetUserRulesQuery();
   const [deleteRule, { isSuccess: ruleIsDeleted, isLoading: ruleIsDeleting, error: ruleDeletingError }] = useDeleteRuleMutation();
   const { data: gameTypes, error: gettingGameTypesError, isLoading: isGettingGameTypes } = useGetGameTypesQuery();
-  const [updateRule, {isLoading: isRuleUpdating}] = useUpdateRuleMutation();
-  const [createRule, {isLoading: isRuleCreating}] = useCreateRuleMutation();
-  const [registerGame, {isLoading: isGameRegistering, isSuccess: gameRegistered, isError: gameFailedToRegister}] = useCreateGameMutation();
+  const [updateRule, { isLoading: isRuleUpdating }] = useUpdateRuleMutation();
+  const [createRule, { isLoading: isRuleCreating }] = useCreateRuleMutation();
+  const [registerGame, { isLoading: isGameRegistering, isSuccess: gameRegistered, isError: gameFailedToRegister }] = useCreateGameMutation();
 
   const isCreatingGame = useSelector(selectIsCreatingGame);
   const dispatch = useDispatch();
@@ -191,4 +192,8 @@ function NewGameContainer() {
   />
 }
 
-export default compose(withLoginOffer, withConnectWalletOffer)(NewGameContainer);
+export default compose(
+  withLoginOffer,
+  withNotBanned,
+  withConnectWalletOffer,
+)(NewGameContainer);

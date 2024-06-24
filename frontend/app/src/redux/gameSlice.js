@@ -36,6 +36,10 @@ const gameSlice = createSlice({
               ...payload.player2.owner,
               address: payload.player2.address.toLowerCase()
             },
+            player2: payload.winner && {
+              ...payload.winner.owner,
+              address: payload.winner.address.toLowerCase()
+            },
           };
         }
       )
