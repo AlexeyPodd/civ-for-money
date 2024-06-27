@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+import web3
 from django.db.models import Q
 from rest_framework import mixins, status
 from rest_framework.decorators import api_view, permission_classes, action
@@ -65,7 +66,7 @@ class GameViewSet(mixins.CreateModelMixin,
                 return GameListReadSerializer
             case 'retrieve':
                 return GameReadSerializer
-            case 'create' | 'update':
+            case 'create' | 'update' | 'update_from_chain':
                 return GameWriteSerializer
             case _:
                 raise ValueError('no serializer for this request type')
@@ -80,9 +81,9 @@ class GameViewSet(mixins.CreateModelMixin,
         try:
             contract_view.fetch_game_info()
         except ValueError:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response({'detail': 'Game not founded on chain.'}, status=status.HTTP_404_NOT_FOUND)
 
-        host_wallet, created = Wallet.objects.get_or_create(owner=request.user, address=contract_view.host)
+        host_wallet = get_object_or_404(Wallet, owner=request.user, address=contract_view.host)
 
         game_data = {
             **request.data,
@@ -96,12 +97,65 @@ class GameViewSet(mixins.CreateModelMixin,
             'player2_vote': contract_view.player2Vote,
             'play_period': timedelta(seconds=contract_view.playPeriod),
             'time_start': None,
+            'winner': None,
         }
 
         serializer = self.get_serializer(data=game_data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def update(self, request, *args, **kwargs):
+        """
+        this endpoint makes updates from chain on command,
+        when some event was triggered and client reports server about it
+        """
+        instance = self.get_object()
+
+        # collecting game data from on-chain storage
+        contract_view = DuelsSmartContractViewAPI(instance.game_index)
+        try:
+            contract_view.fetch_game_info()
+        except ValueError:
+            return Response({'detail': 'Game not founded on chain.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # collecting data from event (for checking was this really happen
+        # and collecting address of winner from Victory event)
+        event_type = request.data.get('event')
+        block_number = request.data.get('blockNumber')
+        try:
+            event_data = contract_view.get_event_data(event_type, block_number)
+        except (ValueError, TypeError, web3.exceptions.ABIEventFunctionNotFound):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if event_data is None or instance.game_index != event_data.id:
+            return Response({'detail': 'Event not founded.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # setting game data
+        player2_wallet_pk = None if contract_view.player2 == web3.constants.ADDRESS_ZERO \
+            else get_object_or_404(Wallet, address=contract_view.player2).pk
+
+        winner_wallet_pk = get_object_or_404(Wallet, address=event_data.winner).pk\
+            if event_type == 'Victory' else None
+
+        game_data = {
+            'player2': player2_wallet_pk,
+            'bet': contract_view.bet,
+            'started': contract_view.started,
+            'closed': contract_view.closed,
+            'dispute': contract_view.disagreement,
+            'host_vote': contract_view.hostVote,
+            'player2_vote': contract_view.player2Vote,
+            'play_period': timedelta(seconds=contract_view.playPeriod),
+            'time_start':  timedelta(seconds=contract_view.timeStart) if contract_view.timeStart else None,
+            'winner': winner_wallet_pk,
+        }
+
+        serializer = self.get_serializer(instance, data=game_data,  partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        return Response(serializer.data)
 
     @action(methods=['GET'], detail=False)
     def lobby(self, request):

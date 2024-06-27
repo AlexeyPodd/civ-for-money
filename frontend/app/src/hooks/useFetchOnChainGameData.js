@@ -1,24 +1,34 @@
-import { useEffect, useState } from "react";
-import DuelContractAPIManager from "../ethereumAPI/api";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { onChainGameDataFetched } from "../redux/gameSlice";
 
-export default function useFetchOnChainGameData(signer, gameID) {
+export default function useFetchOnChainGameData(contractAPI) {
   const dispatch = useDispatch();
-  const [isFetchingOnChainGameData, setIsFetchingOnChainGameData] = useState(true);
-  useEffect(() => {
-    if (signer && gameID) {
-      async function fetchOnChainGameData() {
-        setIsFetchingOnChainGameData(true);
-        const contractAPI = new DuelContractAPIManager(signer, Number(gameID));
-        const data = await contractAPI.getGameData();
-        dispatch(onChainGameDataFetched(data));
-        setIsFetchingOnChainGameData(false);
-      }
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
+  async function fetchOnChainGameData() {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await contractAPI.getGameData();
+      dispatch(onChainGameDataFetched(data));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (contractAPI) {
       fetchOnChainGameData();
     }
-  }, [signer, gameID]);
+  }, [contractAPI]);
 
-  return isFetchingOnChainGameData;
+  const refetch = useCallback(() => {
+    fetchOnChainGameData();
+  }, [contractAPI]);
+
+  return {isLoading, error, refetch};
 }

@@ -51,21 +51,21 @@ export const api = createApi({
       query: (uuid) => ({
         url: `auth/ban/`,
         method: 'POST',
-        body: {uuid},
+        body: { uuid },
       })
     }),
     unbanUser: build.mutation({
       query: (uuid) => ({
         url: `auth/unban/`,
         method: 'POST',
-        body: {uuid},
+        body: { uuid },
       })
     }),
     warnUser: build.mutation({
-      query: ({uuid, description}) => ({
+      query: ({ uuid, description }) => ({
         url: '/auth/warn-user/',
         method: 'POST',
-        body: {uuid, description},
+        body: { uuid, description },
       })
     }),
     checkUserWalletRegistration: build.mutation({
@@ -123,6 +123,13 @@ export const api = createApi({
         body: { title, game, rules, game_index },
       })
     }),
+    updateGame: build.mutation({
+      query: ({ gameID, eventType, blockNumber }) => ({
+        url: `/games/${gameID}/`,
+        method: 'PUT',
+        body: {event: eventType, blockNumber},
+      })
+    }),
     getGame: build.query({
       query: (gameID) => `/games/${gameID}/`,
     }),
@@ -161,6 +168,7 @@ export const {
   useDeleteRuleMutation,
   useGetGameTypesQuery,
   useCreateGameMutation,
+  useUpdateGameMutation,
   useGetGameQuery,
   useGetLobbyGamesQuery,
   useGetUserActualGamesQuery,

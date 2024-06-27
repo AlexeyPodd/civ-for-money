@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function GameTable({
   walletIsWrong,
+  isWalletConnected,
   serverGameData,
   onChainGameData,
   isHost,
@@ -12,9 +13,12 @@ export default function GameTable({
   isPlayer2,
   gameStarted,
   isBanned,
+  onKickModalOpen,
 }) {
-  const votes = ["Not Voted", "Victory", "Loss", "Draw"]
   const navigate = useNavigate();
+
+  const votes = ["Not Voted", "Victory", "Loss", "Draw"]
+  const onChainDataSource = isWalletConnected ? onChainGameData : serverGameData;
 
   return (
     <TableContainer>
@@ -60,17 +64,17 @@ export default function GameTable({
                   }</Text>
                 </Button>
               }
-              {!player2Joined && !isHost
+              {isWalletConnected && !player2Joined && !isHost
                 && <>
                   <Button ms='5px' colorScheme="blue" isDisabled={isBanned}>Join</Button>
                   {isBanned && <Text color='red'>Your account is banned!</Text>}
                 </>
               }
-              {player2Joined && isPlayer2
+              {isWalletConnected && player2Joined && isPlayer2
                 && <Button ms='5px' colorScheme="orange" isDisabled={walletIsWrong || gameStarted} >Quit</Button>
               }
-              {player2Joined && isHost
-                && <Button ms='5px' colorScheme="red" isDisabled={walletIsWrong || gameStarted} >Kick</Button>
+              {isWalletConnected && player2Joined && isHost
+                && <Button ms='5px' colorScheme="red" isDisabled={walletIsWrong || gameStarted} onClick={onKickModalOpen}>Kick</Button>
               }
             </Td>
           </Tr>
@@ -80,38 +84,41 @@ export default function GameTable({
           </Tr>
           <Tr>
             <Td>Bet Size</Td>
-            <Td>{`${onChainGameData.bet / 10 ** 18} ETH`}</Td>
+            <Td>{`${onChainDataSource.bet / 10 ** 18} ETH`}</Td>
           </Tr>
           <Tr>
             <Td>Status</Td>
             <Td>
-              {!onChainGameData.started && !player2Joined && "Waiting for second player to connect"}
-              {!onChainGameData.started && player2Joined && "Waiting for host to start the game"}
-              {onChainGameData.started && !onChainGameData.closed && !onChainGameData.dispute && "The game is on now"}
-              {onChainGameData.started && !onChainGameData.closed && onChainGameData.dispute && "Dispute about result"}
-              {onChainGameData.closed && "Game is finished"}
+              {!onChainDataSource.started && !player2Joined && "Waiting for second player to connect"}
+              {!onChainDataSource.started && player2Joined && "Waiting for host to start the game"}
+              {onChainDataSource.started && !onChainDataSource.closed && (isWalletConnected ? !onChainGameData.disagreement : serverGameData.dispute)
+                && "The game is on now"}
+              {onChainDataSource.started && !onChainDataSource.closed && (isWalletConnected ? onChainGameData.disagreement : serverGameData.dispute)
+                && "Dispute about result"}
+              {onChainDataSource.closed && "Game is finished"}
             </Td>
           </Tr>
           <Tr>
             <Td>Play & Voting Period Duration</Td>
-            <Td>{secondsDurationToRepresentation(onChainGameData.playPeriod)}</Td>
+            <Td>{secondsDurationToRepresentation(isWalletConnected ? onChainGameData.playPeriod : serverGameData.play_period / 1_000)}</Td>
           </Tr>
-          {onChainGameData.started
+          {onChainDataSource.started
             && <>
               <Tr>
                 <Td>End of play & voting period</Td>
-                <Td>{timestampToDateRepresentation(onChainGameData.timeStart + onChainGameData.playPeriod)}</Td>
+                <Td>{timestampToDateRepresentation(isWalletConnected ? onChainGameData.timeStart : serverGameData.time_start
+                  + isWalletConnected ? onChainGameData.playPeriod : serverGameData.play_period / 1_000)}</Td>
               </Tr>
               <Tr>
                 <Td>Host Vote</Td>
-                <Td>{votes[onChainGameData.hostVote]}</Td>
+                <Td>{votes[isWalletConnected ? onChainGameData.hostVote : serverGameData.host_vote]}</Td>
               </Tr>
               <Tr>
                 <Td>Second Player Vote</Td>
-                <Td>{votes[onChainGameData.player2Vote]}</Td>
+                <Td>{votes[isWalletConnected ? onChainGameData.player2Vote : serverGameData.player2_vote]}</Td>
               </Tr>
             </>}
-          {onChainGameData.closed
+          {onChainDataSource.closed
             && <Tr>
               <Td>Winner</Td>
               <Td>{serverGameData.winner.username}</Td>
