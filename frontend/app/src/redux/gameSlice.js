@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, isAnyOf } from "@reduxjs/toolkit";
 import { api } from "./api";
 
 const gameSlice = createSlice({
@@ -24,7 +24,10 @@ const gameSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addMatcher(
-        api.endpoints.getGame.matchFulfilled,
+        isAnyOf(
+          api.endpoints.getGame.matchFulfilled,
+          api.endpoints.updateGame.matchFulfilled,
+        ),
         (state, { payload }) => {
           state.serverGameData = {
             ...payload,
@@ -36,7 +39,7 @@ const gameSlice = createSlice({
               ...payload.player2.owner,
               address: payload.player2.address.toLowerCase()
             },
-            player2: payload.winner && {
+            winner: payload.winner && {
               ...payload.winner.owner,
               address: payload.winner.address.toLowerCase()
             },

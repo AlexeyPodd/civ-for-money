@@ -40,8 +40,13 @@ export default function ActualGamesTable({ games }) {
               </Td>
               <Td>{g.time_start ? timestampToDateRepresentation(g.time_start) : '---'}</Td>
               <Td>{g.time_start ? timestampToDateRepresentation(g.time_start + g.play_period) : '---'}</Td>
-              <Td>{g.host.owner.username}</Td>
-              <Td>{g.player2 ? g.player2.owner.username : '---'}</Td>
+              <Td>{g.host.owner.username.length > 13
+                ? g.host.owner.username.slice(0, 10) + "..."
+                : g.host.owner.username}
+              </Td>
+              <Td>{g.player2 ? (g.player2.owner.username.length > 13
+                ? g.player2.owner.username.slice(0, 10) + "..."
+                : g.player2.owner.username) : '---'}</Td>
               <Td>
                 <Button
                   colorScheme="yellow"

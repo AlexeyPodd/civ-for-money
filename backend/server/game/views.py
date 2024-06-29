@@ -92,7 +92,7 @@ class GameViewSet(mixins.CreateModelMixin,
             'bet': contract_view.bet,
             'started': contract_view.started,
             'closed': contract_view.closed,
-            'dispute': contract_view.dispute,
+            'dispute': contract_view.disagreement,
             'host_vote': contract_view.hostVote,
             'player2_vote': contract_view.player2Vote,
             'play_period': timedelta(seconds=contract_view.playPeriod),
@@ -108,7 +108,7 @@ class GameViewSet(mixins.CreateModelMixin,
     def update(self, request, *args, **kwargs):
         """
         this endpoint makes updates from chain on command,
-        when some event was triggered and client reports server about it
+        when some contract method was executed and client reports server about it
         """
         instance = self.get_object()
 
@@ -119,24 +119,23 @@ class GameViewSet(mixins.CreateModelMixin,
         except ValueError:
             return Response({'detail': 'Game not founded on chain.'}, status=status.HTTP_404_NOT_FOUND)
 
-        # collecting data from event (for checking was this really happen
-        # and collecting address of winner from Victory event)
+        # collecting address of winner from Victory event
         event_type = request.data.get('event')
         block_number = request.data.get('blockNumber')
-        try:
-            event_data = contract_view.get_event_data(event_type, block_number)
-        except (ValueError, TypeError, web3.exceptions.ABIEventFunctionNotFound):
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        if event_type != 'Victory':
+            winner_wallet_pk = None
+        else:
+            try:
+                event_data = contract_view.get_event_data(event_type, block_number)
+            except (ValueError, TypeError):
+                return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        if event_data is None or instance.game_index != event_data.id:
-            return Response({'detail': 'Event not founded.'}, status=status.HTTP_404_NOT_FOUND)
+            winner_wallet_pk = None if event_data is None \
+                else get_object_or_404(Wallet, address=event_data.winner).pk
 
-        # setting game data
+        # setting player2
         player2_wallet_pk = None if contract_view.player2 == web3.constants.ADDRESS_ZERO \
             else get_object_or_404(Wallet, address=contract_view.player2).pk
-
-        winner_wallet_pk = get_object_or_404(Wallet, address=event_data.winner).pk\
-            if event_type == 'Victory' else None
 
         game_data = {
             'player2': player2_wallet_pk,
@@ -155,7 +154,7 @@ class GameViewSet(mixins.CreateModelMixin,
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
 
-        return Response(serializer.data)
+        return Response(GameReadSerializer(instance).data)
 
     @action(methods=['GET'], detail=False)
     def lobby(self, request):
@@ -195,7 +194,7 @@ class GameViewSet(mixins.CreateModelMixin,
     def __get_list_queryset(self, kind, user):
         match kind:
             case "lobby":
-                return Game.objects.filter(player2__isnull=True)
+                return Game.objects.filter(player2__isnull=True, closed=False)
             case "user_actual":
                 return Game.objects.filter(Q(host__owner=user) | Q(player2__owner=user), closed=False)
             case "user_closed":

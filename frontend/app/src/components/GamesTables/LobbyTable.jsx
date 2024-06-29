@@ -29,7 +29,10 @@ export default function LobbyTable({ games }) {
               <Td>{g.title}</Td>
               <Td>{`${g.bet / 10 ** 18} ETH`}</Td>
               <Td>{secondsDurationToRepresentation(g.play_period / 1000)}</Td>
-              <Td>{g.host.owner.username}</Td>
+              <Td>{g.host.owner.username.length > 13
+                ? g.host.owner.username.slice(0, 10) + "..."
+                : g.host.owner.username}
+              </Td>
               <Td>{g.host.owner.victories}/{g.host.owner.defeats}/{g.host.owner.draws}</Td>
               <Td><Button colorScheme="yellow" onClick={() => navigate(`/game/${g.game_index}`)}>Game Page</Button></Td>
             </Tr>

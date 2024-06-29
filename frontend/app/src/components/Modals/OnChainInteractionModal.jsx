@@ -1,24 +1,28 @@
 import { useEffect, useState } from "react";
-import { useUpdateGameMutation } from "../../../redux/api";
-import ActionsModal from "../BaseModals/ActionsModal";
+import { useUpdateGameMutation } from "../../redux/api";
+import ActionsModal from "./BaseModals/ActionsModal";
 
-export default function KickModal({
+export default function OnChainInteractionModal({
+  modalTitle,
   gameID,
   isOpen,
   onClose,
-  username,
-  contractAPI,
+  contractMethod,
+  contractMethodArgs,
+  possibleEventType,
   refetch,
 }) {
   const [confirmed, setConfirmed] = useState(false);
   const [actions, setActions] = useState([
     {
+      id: 1,
       description: 'waiting for transaction confirmation',
       isProcessing: false,
       isSuccess: false,
       isError: false
     },
     {
+      id: 2,
       description: 'registering on server',
       isProcessing: false,
       isSuccess: false,
@@ -32,6 +36,7 @@ export default function KickModal({
     setActions([
       actions[0],
       {
+        id: 2,
         description: actions[1].description,
         isProcessing: isLoading,
         isSuccess,
@@ -39,9 +44,10 @@ export default function KickModal({
       }]);
   }, [isSuccess, isError, isLoading]);
 
-  async function kickOnChain() {
+  async function OnChainInteraction() {
     setActions([
       {
+        id: 1,
         description: actions[0].description,
         isProcessing: true,
         isSuccess: false,
@@ -50,9 +56,10 @@ export default function KickModal({
       actions[1],
     ]);
     try {
-      const receipt = await contractAPI.excludePlayer2();
+      const receipt = await contractMethod(...contractMethodArgs);
       setActions([
         {
+          id: 1,
           description: actions[0].description,
           isProcessing: false,
           isSuccess: true,
@@ -64,6 +71,7 @@ export default function KickModal({
     } catch (error) {
       setActions([
         {
+          id: 1,
           description: actions[0].description,
           isProcessing: false,
           isSuccess: false,
@@ -84,28 +92,29 @@ export default function KickModal({
     }
   }
 
-  async function kickPlayer() {
+  async function interact() {
     setConfirmed(true);
 
     // using smart contract method
     let blockNumber;
-    try {
-      blockNumber = await kickOnChain();
+    try {      
+      blockNumber = await OnChainInteraction();
     } catch (err) {
+      console.log(err)
       return;
     }
 
     // updating data on server
-    updateGame({ gameID, eventType: "SlotFreed", blockNumber });
+    updateGame({ gameID, possibleEventType, blockNumber });
   }
 
   return (
     <ActionsModal
       isOpen={isOpen}
-      modalTitle={`Kick ${username}.`}
+      modalTitle={modalTitle}
       confirmed={confirmed}
       closeModal={closeModal}
-      startProcess={kickPlayer}
+      startProcess={interact}
       processFinished={actions.every(a => a.isSuccess) || actions.some(a => a.isError)}
       actions={actions}
     />

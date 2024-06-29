@@ -38,7 +38,7 @@ export default function Lobby() {
   return (
     <>
       <LobbyTable games={games} />
-      <HStack justify='center'>
+      <HStack mt='10px' justify='center'>
       <Spacer />
         <Paginator
           currentPageNumber={pageNumber}

@@ -1,6 +1,7 @@
 import { Button, Badge, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import timestampToDateRepresentation from "../../../utils/timestampToDateRepresentation";
+import secondsDurationToRepresentation from "../../../utils/secondsDurationToRepresentation";
 
 export default function ClosedGamesTable({ games }) {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ export default function ClosedGamesTable({ games }) {
             <Th>Game</Th>
             <Th>Title</Th>
             <Th>Bet</Th>
-            <Th>Play PEriod</Th>
+            <Th>Play Period</Th>
             <Th>Started</Th>
             <Th>Host</Th>
             <Th>Second PLayer</Th>
@@ -31,15 +32,33 @@ export default function ClosedGamesTable({ games }) {
               <Td>{g.title}</Td>
               <Td>{`${g.bet / 10 ** 18} ETH`}</Td>
               <Td>{secondsDurationToRepresentation(g.play_period)}</Td>
-              <Td>{timestampToDateRepresentation(g.time_start)}</Td>
-              <Td>{g.host.owner.username}</Td>
-              <Td>{g.player2.owner.username}</Td>
-              <Td>{g.winner.owner.username}</Td>
+              <Td>{g.started ? timestampToDateRepresentation(g.time_start) : "---"}</Td>
+              <Td>{g.host.owner.username.length > 13
+                ? g.host.owner.username.slice(0, 10) + "..."
+                : g.host.owner.username}</Td>
+              <Td>{g.player2
+                ? (g.player2.owner.username.length > 13
+                  ? g.player2.owner.username.slice(0, 10) + "..."
+                  : g.player2.owner.username
+                )
+                : '---'}</Td>
+              <Td>{g.started
+                ? (g.winner
+                  ? (g.winner.owner.username.length > 13
+                    ? g.winner.owner.username.slice(0, 10) + "..."
+                    : g.winner.owner.username)
+                  : "Draw"
+                )
+                : "---"}
+              </Td>
               <Td>
-                {g.dispute
-                  ? <Badge colorScheme='red'>arbitrated</Badge>
-                  : <Badge colorScheme='green'>consent</Badge>
-                }
+                {g.started
+                  ? (g.dispute
+                    ? <Badge colorScheme='red'>arbitrated</Badge>
+                    : <Badge colorScheme='green'>consent</Badge>
+                  )
+                  : <Badge colorScheme='yellow'>canceled</Badge>
+                  }
               </Td>
               <Td>
                 <Button

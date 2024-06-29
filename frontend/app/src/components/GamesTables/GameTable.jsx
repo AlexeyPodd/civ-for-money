@@ -13,13 +13,19 @@ export default function GameTable({
   isPlayer2,
   gameStarted,
   isBanned,
-  onKickModalOpen,
+  onModalOpen,
+  setChosenMethod,
 }) {
   const navigate = useNavigate();
 
   const votes = ["Not Voted", "Victory", "Loss", "Draw"]
   const onChainDataSource = isWalletConnected ? onChainGameData : serverGameData;
 
+  function onMethodModalOpen(method) {
+    setChosenMethod(method);
+    onModalOpen();
+  }
+  
   return (
     <TableContainer>
       <Table>
@@ -54,7 +60,7 @@ export default function GameTable({
           <Tr>
             <Td>Second Player</Td>
             <Td>
-              {serverGameData.player2
+              {player2Joined
                 && <Button colorScheme="green" onClick={() => navigate(`/profile/${serverGameData.player2.uuid}`)}>
                   <Image borderRadius='full' src={serverGameData.player2.avatar} alt='avatar' />
                   <Text ms='10px'>{
@@ -66,15 +72,15 @@ export default function GameTable({
               }
               {isWalletConnected && !player2Joined && !isHost
                 && <>
-                  <Button ms='5px' colorScheme="blue" isDisabled={isBanned}>Join</Button>
+                  <Button ms='5px' colorScheme="blue" isDisabled={isBanned} onClick={() => onMethodModalOpen("join")}>Join</Button>
                   {isBanned && <Text color='red'>Your account is banned!</Text>}
                 </>
               }
               {isWalletConnected && player2Joined && isPlayer2
-                && <Button ms='5px' colorScheme="orange" isDisabled={walletIsWrong || gameStarted} >Quit</Button>
+                && <Button ms='5px' colorScheme="orange" isDisabled={walletIsWrong || gameStarted} onClick={() => onMethodModalOpen("quit")}>Quit</Button>
               }
               {isWalletConnected && player2Joined && isHost
-                && <Button ms='5px' colorScheme="red" isDisabled={walletIsWrong || gameStarted} onClick={onKickModalOpen}>Kick</Button>
+                && <Button ms='5px' colorScheme="red" isDisabled={walletIsWrong || gameStarted} onClick={() => onMethodModalOpen("kick")}>Kick</Button>
               }
             </Td>
           </Tr>
@@ -89,13 +95,14 @@ export default function GameTable({
           <Tr>
             <Td>Status</Td>
             <Td>
-              {!onChainDataSource.started && !player2Joined && "Waiting for second player to connect"}
+              {!onChainDataSource.started && !player2Joined && !onChainDataSource.closed && "Waiting for second player to connect"}
               {!onChainDataSource.started && player2Joined && "Waiting for host to start the game"}
               {onChainDataSource.started && !onChainDataSource.closed && (isWalletConnected ? !onChainGameData.disagreement : serverGameData.dispute)
                 && "The game is on now"}
               {onChainDataSource.started && !onChainDataSource.closed && (isWalletConnected ? onChainGameData.disagreement : serverGameData.dispute)
                 && "Dispute about result"}
-              {onChainDataSource.closed && "Game is finished"}
+              {onChainDataSource.closed && onChainDataSource.started && "Game is finished"}
+              {onChainDataSource.closed && !onChainDataSource.started && "Game was canceled"}
             </Td>
           </Tr>
           <Tr>
@@ -118,10 +125,10 @@ export default function GameTable({
                 <Td>{votes[isWalletConnected ? onChainGameData.player2Vote : serverGameData.player2_vote]}</Td>
               </Tr>
             </>}
-          {onChainDataSource.closed
+          {onChainDataSource.started &&onChainDataSource.closed
             && <Tr>
               <Td>Winner</Td>
-              <Td>{serverGameData.winner.username}</Td>
+              <Td>{serverGameData.winner ? serverGameData.winner.username : "Draw"}</Td>
             </Tr>}
         </Tbody>
       </Table>

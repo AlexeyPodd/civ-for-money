@@ -61,17 +61,14 @@ export default class DuelContractAPIManager {
   async start() {
     return this._executeMethod('start');
   }
-  async voteForDraw() {
-    return this._executeMethod('voteForDraw');
-  }
-  async forceDraw() {
-    return this._executeMethod('forceDraw');
-  }
-  async voteForPlace(place) {
-    return this._executeMethod('voteForPlace', place);
+  async voteResult(place) {
+    return this._executeMethod('voteResult', place);
   }
   async forceAppointWinner(winnerAddress) {
     return this._executeMethod('forceAppointWinner', winnerAddress);
+  }
+  async forceDraw() {
+    return this._executeMethod('forceDraw');
   }
 
   async _executeMethod(methodName, ...args) {

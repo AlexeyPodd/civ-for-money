@@ -124,10 +124,10 @@ export const api = createApi({
       })
     }),
     updateGame: build.mutation({
-      query: ({ gameID, eventType, blockNumber }) => ({
+      query: ({ gameID, possibleEventType, blockNumber }) => ({
         url: `/games/${gameID}/`,
         method: 'PUT',
-        body: {event: eventType, blockNumber},
+        body: {event: possibleEventType, blockNumber},
       })
     }),
     getGame: build.query({

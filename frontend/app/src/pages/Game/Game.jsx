@@ -2,8 +2,9 @@ import GameTable from '../../components/GamesTables/GameTable';
 import ButtonsBar from './ButtonsBar';
 import WrongWalletWarningBanner from '../../components/Banners/WrongWalletWarningBanner';
 import WalletIsNotConnectedBanner from '../../components/Banners/WalletIsNotConnectedBanner';
-import { useDisclosure } from '@chakra-ui/react';
-import KickModal from '../../components/Modals/EtherActionModals/KickModal';
+import { Button, HStack, Spacer, useDisclosure } from '@chakra-ui/react';
+import OnChainInteractionModal from '../../components/Modals/OnChainInteractionModal';
+import { RepeatClockIcon } from '@chakra-ui/icons';
 
 export default function Game({
   uuid,
@@ -15,9 +16,13 @@ export default function Game({
   isBanned,
   gameID,
   refetch,
-  contractAPI,
+  interactionVariants,
+  chosenMethod,
+  setChosenMethod,
+  synchronizeGameData,
 }) {
-  const { isOpen: isKickModalOpen, onOpen: onKickModalOpen, onClose: onKickModalClose } = useDisclosure();
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const player2Joined = Boolean(serverGameData.player2);
   const isHost = uuid === serverGameData.host.uuid;
@@ -40,9 +45,21 @@ export default function Game({
         player2Joined={player2Joined}
         isArbiter={isArbiter}
         gameStarted={onChainGameData.started}
+        gameClosed={onChainGameData.closed}
         disagreementReached={onChainGameData.disagreement}
+        onModalOpen={onOpen}
+        setChosenMethod={setChosenMethod}
       />
     }
+    <HStack mt='10px' justify='center'>
+      <Spacer />
+      <Button
+        onClick={synchronizeGameData}
+        leftIcon={<RepeatClockIcon />}
+        colorScheme="green"
+        variant="outline"
+      >Synchronize Server and on-chain Data</Button>
+    </HStack>
     <GameTable
       walletIsWrong={walletIsWrong}
       isWalletConnected={isWalletConnected}
@@ -52,16 +69,20 @@ export default function Game({
       player2Joined={player2Joined}
       isPlayer2={isPlayer2}
       gameStarted={onChainGameData.started}
+      gameClosed={onChainGameData.closed}
       isBanned={isBanned}
-      onKickModalOpen={onKickModalOpen}
+      onModalOpen={onOpen}
+      setChosenMethod={setChosenMethod}
     />
-    <KickModal
+    <OnChainInteractionModal
       gameID={gameID}
-      isOpen={isKickModalOpen}
-      onClose={onKickModalClose}
-      username={serverGameData.player2?.username}
-      contractAPI={contractAPI}
+      isOpen={isOpen}
+      onClose={onClose}
       refetch={refetch}
+      modalTitle={interactionVariants && interactionVariants[chosenMethod]?.title}
+      contractMethod={interactionVariants && interactionVariants[chosenMethod]?.method}
+      contractMethodArgs={interactionVariants && interactionVariants[chosenMethod]?.args}
+      possibleEventType={interactionVariants && interactionVariants[chosenMethod]?.possible_event}
     />
   </>
 }
