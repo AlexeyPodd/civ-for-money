@@ -20,11 +20,12 @@ export default function Game({
   chosenMethod,
   setChosenMethod,
   synchronizeGameData,
+  isGettingPlayer2ByAddress,
 }) {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const player2Joined = Boolean(serverGameData.player2);
+  const player2Joined = Boolean(serverGameData.player2 || isGettingPlayer2ByAddress);
   const isHost = uuid === serverGameData.host.uuid;
   const isPlayer2 = uuid === serverGameData.player2?.uuid;
   const walletIsWrong = isWalletConnected && (isHost && connectedWalletAddress != onChainGameData.host
@@ -58,7 +59,7 @@ export default function Game({
         leftIcon={<RepeatClockIcon />}
         colorScheme="green"
         variant="outline"
-      >Synchronize Server and on-chain Data</Button>
+      >Refresh</Button>
     </HStack>
     <GameTable
       walletIsWrong={walletIsWrong}
@@ -73,6 +74,7 @@ export default function Game({
       isBanned={isBanned}
       onModalOpen={onOpen}
       setChosenMethod={setChosenMethod}
+      isGettingPlayer2ByAddress={isGettingPlayer2ByAddress}
     />
     <OnChainInteractionModal
       gameID={gameID}

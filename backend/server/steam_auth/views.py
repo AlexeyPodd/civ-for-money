@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from game.web3.utils import recover_address
 from .models import User, Wallet, PreBanWarning
-from .serializers import UserSerializer
+from .serializers import UserSerializer, WalletShortSerializer, UserShortSerializer
 from .steam_requests import validate_steam_login, get_steam_user_data
 
 
@@ -95,10 +95,19 @@ def get_user_data(request):
     return Response(serializer.data)
 
 
+@api_view(['GET'])
+def get_user_data_by_address(request):
+    """returns wallet (user data + address) by address, or 404"""
+
+    address = request.GET.get('address')
+    instance = get_object_or_404(Wallet, address=address)
+    return Response(WalletShortSerializer(instance).data)
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def check_wallet_registration(request):
-    """returns response with 4xx status if wallet is not associated with this steam account"""
+    """returns response with 404 status if wallet is not associated with this steam account"""
 
     address = request.data['address']
     get_object_or_404(Wallet, address=address, owner=request.user)

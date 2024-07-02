@@ -15,6 +15,7 @@ export default function GameTable({
   isBanned,
   onModalOpen,
   setChosenMethod,
+  isGettingPlayer2ByAddress,
 }) {
   const navigate = useNavigate();
 
@@ -25,7 +26,7 @@ export default function GameTable({
     setChosenMethod(method);
     onModalOpen();
   }
-  
+
   return (
     <TableContainer>
       <Table>
@@ -61,14 +62,17 @@ export default function GameTable({
             <Td>Second Player</Td>
             <Td>
               {player2Joined
-                && <Button colorScheme="green" onClick={() => navigate(`/profile/${serverGameData.player2.uuid}`)}>
-                  <Image borderRadius='full' src={serverGameData.player2.avatar} alt='avatar' />
-                  <Text ms='10px'>{
-                    serverGameData.player2.username.length > 13
-                      ? serverGameData.player2.username.slice(0, 10) + "..."
-                      : serverGameData.player2.username
-                  }</Text>
-                </Button>
+                && (isGettingPlayer2ByAddress
+                  ? onChainGameData.player2
+                  : <Button colorScheme="green" onClick={() => navigate(`/profile/${serverGameData.player2.uuid}`)}>
+                    <Image borderRadius='full' src={serverGameData.player2.avatar} alt='avatar' />
+                    <Text ms='10px'>{
+                      serverGameData.player2.username.length > 13
+                        ? serverGameData.player2.username.slice(0, 10) + "..."
+                        : serverGameData.player2.username
+                    }</Text>
+                  </Button>
+                )
               }
               {isWalletConnected && !player2Joined && !isHost
                 && <>
@@ -125,7 +129,7 @@ export default function GameTable({
                 <Td>{votes[isWalletConnected ? onChainGameData.player2Vote : serverGameData.player2_vote]}</Td>
               </Tr>
             </>}
-          {onChainDataSource.started &&onChainDataSource.closed
+          {onChainDataSource.started && onChainDataSource.closed
             && <Tr>
               <Td>Winner</Td>
               <Td>{serverGameData.winner ? serverGameData.winner.username : "Draw"}</Td>

@@ -1,5 +1,6 @@
 import { createSlice, isAnyOf } from "@reduxjs/toolkit";
 import { api } from "./api";
+import { ethers } from "ethers";
 
 const gameSlice = createSlice({
   name: 'game',
@@ -19,6 +20,19 @@ const gameSlice = createSlice({
     },
     onChainGameDataFetched: (state, action) => {
       state.onChainGameData = action.payload;
+    },
+    player2JoinedEventEmitted: (state, action) => {
+      state.onChainGameData.player2 = action.payload.toLowerCase();
+    },
+    slotFreedEventEmitted: (state) => {
+      state.serverGameData.player2 = null;
+      state.onChainGameData.player2 = ethers.ZeroAddress;
+    },
+    gameCancelEventEmitted: (state) => {
+      state.serverGameData.player2 = null;
+      state.onChainGameData.player2 = ethers.ZeroAddress;
+      state.serverGameData.closed = true;
+      state.onChainGameData.closed = true;
     },
   },
   extraReducers: (builder) => {
@@ -46,13 +60,25 @@ const gameSlice = createSlice({
           };
         }
       )
+      .addMatcher(
+        api.endpoints.getAnotherUserDataByAddress.matchFulfilled,
+        (state, { payload }) => {
+          state.serverGameData.player2 = {
+            ...payload.owner,
+            address: payload.address.toLowerCase(),
+          };
+        }
+      )
   }
 });
 
 export const {
   gameCreatingStarted,
   gameCreatingFinished,
-  onChainGameDataFetched
+  onChainGameDataFetched,
+  player2JoinedEventEmitted,
+  slotFreedEventEmitted,
+  gameCancelEventEmitted,
 } = gameSlice.actions;
 
 

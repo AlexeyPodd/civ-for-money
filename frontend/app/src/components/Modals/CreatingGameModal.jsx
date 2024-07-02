@@ -62,7 +62,7 @@ export default function CreatingGameModal({
     <Modal isOpen={isModalOpen} isCentered>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Creating New Game. Please wait.</ModalHeader>
+        <ModalHeader>Creating New Game.</ModalHeader>
         <ModalBody>
           <HStack>
             <Text>Setting game rules...</Text>

@@ -47,6 +47,9 @@ export const api = createApi({
     getAnotherUserData: build.query({
       query: (uuid) => `/auth/user-data/?uuid=${uuid}`,
     }),
+    getAnotherUserDataByAddress: build.query({
+      query: (address) => `/auth/user-data-by-address/?address=${address}`,
+    }),
     banUser: build.mutation({
       query: (uuid) => ({
         url: `auth/ban/`,
@@ -156,6 +159,7 @@ export const {
   useLoginMutation,
   useLogoutMutation,
   useGetUserDataQuery,
+  useLazyGetAnotherUserDataByAddressQuery,
   useGetAnotherUserDataQuery,
   useBanUserMutation,
   useUnbanUserMutation,

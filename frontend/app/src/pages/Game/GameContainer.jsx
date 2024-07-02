@@ -1,10 +1,10 @@
 import Game from './Game';
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { SignerContext } from "../../context/SignerContext";
 import { useParams } from 'react-router-dom';
-import { useGetGameQuery, useUpdateGameMutation } from '../../redux/api';
+import { useGetGameQuery, useLazyGetAnotherUserDataByAddressQuery, useUpdateGameMutation } from '../../redux/api';
 import Preloader from '../../components/Preloader/Preloader';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectOnChanGameData, selectServerGameData } from '../../redux/gameSlice';
 import SomeError from '../../components/SomeError/SomeError';
 import withLoginOffer from "../../hoc/withLoginOffer";
@@ -18,8 +18,11 @@ import DuelContractAPIManager from '../../ethereumAPI/api';
 function GameContainer() {
   const toast = useContext(ToastContext);
 
+  const dispatch = useDispatch();
+
   const { signer } = useContext(SignerContext);
   const [contractAPI, setContractAPI] = useState();
+  const contractAPIRef = useRef();
   const { gameID } = useParams();
   const uuid = useSelector(selectUUID);
   const isArbiter = useSelector(selectIsArbiter);
@@ -39,6 +42,9 @@ function GameContainer() {
     refetch: onChainRefetch,
   } = useFetchOnChainGameData(contractAPI);
   const onChainGameData = useSelector(selectOnChanGameData);
+
+  // getting user data from server on joined event emitted
+  const [getPlayer2DataByAddress, { isLoading: isGettingPlayer2ByAddress, error: gettingPlayer2ByAddressError }] = useLazyGetAnotherUserDataByAddressQuery();
 
   // variants of interactions with smart contract
   const [interactionVariants, setInteractionVariants] = useState();
@@ -121,19 +127,39 @@ function GameContainer() {
     synchronize({ gameID });
   }
 
-  // setting contract api, if there is signer and id of game to interact
+  // setting contract api, if there is signer and id of game to interact;
+  // also setting on-chain event listeners
   useEffect(() => {
     if (signer && gameID) {
-      setContractAPI(new DuelContractAPIManager(signer, Number(gameID)));
-    } else {
+      async function createContractAPI(signer, gameID) {
+        if (contractAPIRef.current) {
+          contractAPIRef.current.removeAllListeners();
+        }
+
+        const newContractAPI = new DuelContractAPIManager(signer, Number(gameID));
+        await newContractAPI.setEventListeners(dispatch, toast, getPlayer2DataByAddress);
+        setContractAPI(newContractAPI);
+        contractAPIRef.current = newContractAPI;
+      }
+      createContractAPI(signer, gameID);
+
+    } else if (contractAPIRef.current) {
       setContractAPI(null);
+      contractAPIRef.current = null;
     }
-  }, [signer, gameID]);
+
+    return () => {
+      if (contractAPIRef.current) {
+        contractAPIRef.current.removeAllListeners();
+      }
+    };
+  }, [signer, gameID, dispatch, toast]);
 
   if (isLoading || isFetchingOnChainData || isUpdating) return <Preloader />
   if (error) return <SomeError error={error} />
   if (onChainError) return <SomeError error={onChainError} />
   if (updatingError) return <SomeError error={updatingError} />
+  if (gettingPlayer2ByAddressError) return <SomeError error={gettingPlayer2ByAddressError} />
 
   return <Game
     uuid={uuid}
@@ -149,6 +175,7 @@ function GameContainer() {
     chosenMethod={chosenMethod}
     setChosenMethod={setChosenMethod}
     synchronizeGameData={synchronizeGameData}
+    isGettingPlayer2ByAddress={isGettingPlayer2ByAddress}
   />
 }
 
