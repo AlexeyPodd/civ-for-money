@@ -29,7 +29,7 @@ function GameContainer() {
   const isBanned = useSelector(selectBanned);
 
   // fetching game data from server
-  const { error, isLoading } = useGetGameQuery(gameID);
+  const { error, isLoading, refetch } = useGetGameQuery(gameID);
   const serverGameData = useSelector(selectServerGameData);
 
   // updating data on server from EVM
@@ -44,7 +44,7 @@ function GameContainer() {
   const onChainGameData = useSelector(selectOnChanGameData);
 
   // getting user data from server on joined event emitted
-  const [getPlayer2DataByAddress, { isLoading: isGettingPlayer2ByAddress, error: gettingPlayer2ByAddressError }] = useLazyGetAnotherUserDataByAddressQuery();
+  const [getPlayer2DataByAddress, { error: gettingPlayer2ByAddressError }] = useLazyGetAnotherUserDataByAddressQuery();
 
   // variants of interactions with smart contract
   const [interactionVariants, setInteractionVariants] = useState();
@@ -137,7 +137,12 @@ function GameContainer() {
         }
 
         const newContractAPI = new DuelContractAPIManager(signer, Number(gameID));
-        await newContractAPI.setEventListeners(dispatch, toast, getPlayer2DataByAddress);
+        newContractAPI.setEventListeners(
+          dispatch,
+          toast,
+          onChainRefetch,
+          getPlayer2DataByAddress
+        );
         setContractAPI(newContractAPI);
         contractAPIRef.current = newContractAPI;
       }
@@ -146,6 +151,7 @@ function GameContainer() {
     } else if (contractAPIRef.current) {
       setContractAPI(null);
       contractAPIRef.current = null;
+      refetch();
     }
 
     return () => {
@@ -170,12 +176,11 @@ function GameContainer() {
     isArbiter={isArbiter}
     isBanned={isBanned}
     gameID={gameID}
-    refetch={onChainRefetch}
+    onChainRefetch={onChainRefetch}
     interactionVariants={interactionVariants}
     chosenMethod={chosenMethod}
     setChosenMethod={setChosenMethod}
     synchronizeGameData={synchronizeGameData}
-    isGettingPlayer2ByAddress={isGettingPlayer2ByAddress}
   />
 }
 

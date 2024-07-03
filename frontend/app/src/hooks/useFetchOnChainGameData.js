@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { onChainGameDataFetched } from "../redux/gameSlice";
 
@@ -6,13 +6,22 @@ export default function useFetchOnChainGameData(contractAPI) {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const contractAPIRef = useRef(contractAPI);
 
-  async function fetchOnChainGameData() {
-    setIsLoading(true);
+  useEffect(() => {
+    contractAPIRef.current = contractAPI;
+  }, [contractAPI]);
+
+  async function fetchOnChainGameData(isInitialFetch) {
+    setIsLoading(isInitialFetch);
     setError(null);
     try {
-      const data = await contractAPI.getGameData();
-      dispatch(onChainGameDataFetched(data));
+      if (contractAPIRef.current) {
+        const data = await contractAPIRef.current.getGameData();
+        dispatch(onChainGameDataFetched(data));
+      } else {
+        throw new Error('Contract API is not available');
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -22,13 +31,13 @@ export default function useFetchOnChainGameData(contractAPI) {
 
   useEffect(() => {
     if (contractAPI) {
-      fetchOnChainGameData();
+      fetchOnChainGameData(true);
     }
   }, [contractAPI]);
 
   const refetch = useCallback(() => {
-    fetchOnChainGameData();
+    fetchOnChainGameData(false);
   }, [contractAPI]);
 
-  return {isLoading, error, refetch};
+  return { isLoading, error, refetch };
 }

@@ -5,6 +5,7 @@ import WalletIsNotConnectedBanner from '../../components/Banners/WalletIsNotConn
 import { Button, HStack, Spacer, useDisclosure } from '@chakra-ui/react';
 import OnChainInteractionModal from '../../components/Modals/OnChainInteractionModal';
 import { RepeatClockIcon } from '@chakra-ui/icons';
+import { ethers } from 'ethers';
 
 export default function Game({
   uuid,
@@ -15,21 +16,21 @@ export default function Game({
   isArbiter,
   isBanned,
   gameID,
-  refetch,
+  onChainRefetch,
   interactionVariants,
   chosenMethod,
   setChosenMethod,
   synchronizeGameData,
-  isGettingPlayer2ByAddress,
 }) {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const player2Joined = Boolean(serverGameData.player2 || isGettingPlayer2ByAddress);
+  const player2Joined = Boolean(serverGameData.player2 || onChainGameData.player2 != ethers.ZeroAddress);
   const isHost = uuid === serverGameData.host.uuid;
   const isPlayer2 = uuid === serverGameData.player2?.uuid;
-  const walletIsWrong = isWalletConnected && (isHost && connectedWalletAddress != onChainGameData.host
-    || isPlayer2 && connectedWalletAddress != onChainGameData.player2);
+  const walletIsWrong = false;
+  // const walletIsWrong = isWalletConnected && (isHost && connectedWalletAddress != onChainGameData.host
+  //   || isPlayer2 && connectedWalletAddress != onChainGameData.player2);
 
   return <>
     {!isWalletConnected && <WalletIsNotConnectedBanner />}
@@ -55,7 +56,10 @@ export default function Game({
     <HStack mt='10px' justify='center'>
       <Spacer />
       <Button
-        onClick={synchronizeGameData}
+        onClick={() => {
+          synchronizeGameData();
+          onChainRefetch();
+        }}
         leftIcon={<RepeatClockIcon />}
         colorScheme="green"
         variant="outline"
@@ -74,13 +78,12 @@ export default function Game({
       isBanned={isBanned}
       onModalOpen={onOpen}
       setChosenMethod={setChosenMethod}
-      isGettingPlayer2ByAddress={isGettingPlayer2ByAddress}
     />
     <OnChainInteractionModal
       gameID={gameID}
       isOpen={isOpen}
       onClose={onClose}
-      refetch={refetch}
+      onChainRefetch={onChainRefetch}
       modalTitle={interactionVariants && interactionVariants[chosenMethod]?.title}
       contractMethod={interactionVariants && interactionVariants[chosenMethod]?.method}
       contractMethodArgs={interactionVariants && interactionVariants[chosenMethod]?.args}

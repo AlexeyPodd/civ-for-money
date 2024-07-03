@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 import web3
 from django.db.models import Q
@@ -146,7 +146,7 @@ class GameViewSet(mixins.CreateModelMixin,
             'host_vote': contract_view.hostVote,
             'player2_vote': contract_view.player2Vote,
             'play_period': timedelta(seconds=contract_view.playPeriod),
-            'time_start':  timedelta(seconds=contract_view.timeStart) if contract_view.timeStart else None,
+            'time_start':  datetime.utcfromtimestamp(contract_view.timeStart) if contract_view.timeStart else None,
             'winner': winner_wallet_pk,
         }
 

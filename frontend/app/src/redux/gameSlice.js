@@ -19,7 +19,10 @@ const gameSlice = createSlice({
       window.onbeforeunload = undefined;
     },
     onChainGameDataFetched: (state, action) => {
-      state.onChainGameData = action.payload;
+      state.onChainGameData = {
+        ...state.onChainGameData,
+        ...action.payload,
+      };
     },
     player2JoinedEventEmitted: (state, action) => {
       state.onChainGameData.player2 = action.payload.toLowerCase();
@@ -29,11 +32,12 @@ const gameSlice = createSlice({
       state.onChainGameData.player2 = ethers.ZeroAddress;
     },
     gameCancelEventEmitted: (state) => {
-      state.serverGameData.player2 = null;
-      state.onChainGameData.player2 = ethers.ZeroAddress;
       state.serverGameData.closed = true;
       state.onChainGameData.closed = true;
     },
+    victoryEventEmitted: (state, { payload }) => {
+      state.onChainGameData.winner = payload;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -79,6 +83,7 @@ export const {
   player2JoinedEventEmitted,
   slotFreedEventEmitted,
   gameCancelEventEmitted,
+  victoryEventEmitted,
 } = gameSlice.actions;
 
 

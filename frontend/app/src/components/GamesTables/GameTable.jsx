@@ -2,6 +2,7 @@ import { Button, Table, TableContainer, Tbody, Td, Th, Thead, Tr, Image, Text } 
 import secondsDurationToRepresentation from "../../utils/secondsDurationToRepresentation";
 import timestampToDateRepresentation from "../../utils/timestampToDateRepresentation";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export default function GameTable({
   walletIsWrong,
@@ -15,9 +16,17 @@ export default function GameTable({
   isBanned,
   onModalOpen,
   setChosenMethod,
-  isGettingPlayer2ByAddress,
 }) {
   const navigate = useNavigate();
+
+  // display winner from server source or from event, dispatched to onChainGameData
+  const [winner, setWinner] = useState(null);
+  useEffect(() => {
+    if (serverGameData.winner) setWinner(serverGameData.winner)
+    else if (onChainGameData.winner) {
+      setWinner(onChainGameData.winner === serverGameData.host.address ? serverGameData.host : serverGameData.player2);
+    }
+  }, [serverGameData, onChainGameData])
 
   const votes = ["Not Voted", "Victory", "Loss", "Draw"]
   const onChainDataSource = isWalletConnected ? onChainGameData : serverGameData;
@@ -62,7 +71,7 @@ export default function GameTable({
             <Td>Second Player</Td>
             <Td>
               {player2Joined
-                && (isGettingPlayer2ByAddress
+                && (!serverGameData.player2
                   ? onChainGameData.player2
                   : <Button colorScheme="green" onClick={() => navigate(`/profile/${serverGameData.player2.uuid}`)}>
                     <Image borderRadius='full' src={serverGameData.player2.avatar} alt='avatar' />
@@ -80,10 +89,10 @@ export default function GameTable({
                   {isBanned && <Text color='red'>Your account is banned!</Text>}
                 </>
               }
-              {isWalletConnected && player2Joined && isPlayer2
+              {isWalletConnected && player2Joined && isPlayer2 && !onChainDataSource.closed
                 && <Button ms='5px' colorScheme="orange" isDisabled={walletIsWrong || gameStarted} onClick={() => onMethodModalOpen("quit")}>Quit</Button>
               }
-              {isWalletConnected && player2Joined && isHost
+              {isWalletConnected && player2Joined && isHost && !onChainDataSource.closed
                 && <Button ms='5px' colorScheme="red" isDisabled={walletIsWrong || gameStarted} onClick={() => onMethodModalOpen("kick")}>Kick</Button>
               }
             </Td>
@@ -100,7 +109,7 @@ export default function GameTable({
             <Td>Status</Td>
             <Td>
               {!onChainDataSource.started && !player2Joined && !onChainDataSource.closed && "Waiting for second player to connect"}
-              {!onChainDataSource.started && player2Joined && "Waiting for host to start the game"}
+              {!onChainDataSource.started && player2Joined && !onChainDataSource.closed && "Waiting for host to start the game"}
               {onChainDataSource.started && !onChainDataSource.closed && (isWalletConnected ? !onChainGameData.disagreement : serverGameData.dispute)
                 && "The game is on now"}
               {onChainDataSource.started && !onChainDataSource.closed && (isWalletConnected ? onChainGameData.disagreement : serverGameData.dispute)
@@ -111,14 +120,17 @@ export default function GameTable({
           </Tr>
           <Tr>
             <Td>Play & Voting Period Duration</Td>
-            <Td>{secondsDurationToRepresentation(isWalletConnected ? onChainGameData.playPeriod : serverGameData.play_period / 1_000)}</Td>
+            <Td>{secondsDurationToRepresentation((isWalletConnected ? onChainGameData.playPeriod : serverGameData.play_period) / 1_000)}</Td>
           </Tr>
           {onChainDataSource.started
             && <>
               <Tr>
                 <Td>End of play & voting period</Td>
-                <Td>{timestampToDateRepresentation(isWalletConnected ? onChainGameData.timeStart : serverGameData.time_start
-                  + isWalletConnected ? onChainGameData.playPeriod : serverGameData.play_period / 1_000)}</Td>
+                <Td>{timestampToDateRepresentation(
+                  (isWalletConnected ? onChainGameData.timeStart : serverGameData.time_start)
+                  + (isWalletConnected ? onChainGameData.playPeriod : serverGameData.play_period)
+                )}
+                </Td>
               </Tr>
               <Tr>
                 <Td>Host Vote</Td>
@@ -132,7 +144,19 @@ export default function GameTable({
           {onChainDataSource.started && onChainDataSource.closed
             && <Tr>
               <Td>Winner</Td>
-              <Td>{serverGameData.winner ? serverGameData.winner.username : "Draw"}</Td>
+              <Td>
+                {winner
+                  ? <Button colorScheme="green" onClick={() => navigate(`/profile/${winner.uuid}`)}>
+                    <Image borderRadius='full' src={winner.avatar} alt='avatar' />
+                    <Text ms='10px'>{
+                      winner.username.length > 13
+                        ? winner.username.slice(0, 10) + "..."
+                        : winner.username
+                    }</Text>
+                  </Button>
+                  : "Draw"
+                }
+              </Td>
             </Tr>}
         </Tbody>
       </Table>

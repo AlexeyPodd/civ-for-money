@@ -10,10 +10,9 @@ export default function OnChainInteractionModal({
   contractMethod,
   contractMethodArgs,
   possibleEventType,
-  refetch,
+  onChainRefetch,
 }) {
-  const [confirmed, setConfirmed] = useState(false);
-  const [actions, setActions] = useState([
+  const initialActions = [
     {
       id: 1,
       description: 'waiting for transaction confirmation',
@@ -28,7 +27,9 @@ export default function OnChainInteractionModal({
       isSuccess: false,
       isError: false
     },
-  ]);
+  ];
+  const [confirmed, setConfirmed] = useState(false);
+  const [actions, setActions] = useState(initialActions);
 
   const [updateGame, { isLoading, isError, isSuccess, reset }] = useUpdateGameMutation();
 
@@ -87,8 +88,9 @@ export default function OnChainInteractionModal({
     onClose();
     if (confirmed) {
       reset();
-      refetch();
+      onChainRefetch();
       setConfirmed(false);
+      setActions(initialActions);
     }
   }
 
@@ -97,7 +99,7 @@ export default function OnChainInteractionModal({
 
     // using smart contract method
     let blockNumber;
-    try {      
+    try {
       blockNumber = await OnChainInteraction();
     } catch (err) {
       console.log(err)

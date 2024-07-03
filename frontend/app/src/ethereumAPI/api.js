@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import DuelsV1 from '../artifacts/contracts/DuelsV1.sol/DuelsV1';
-import { gameCancelEventEmitted, slotFreedEventEmitted } from '../redux/gameSlice';
+import { gameCancelEventEmitted, player2JoinedEventEmitted, slotFreedEventEmitted, victoryEventEmitted } from '../redux/gameSlice';
 
 
 export default class DuelContractAPIManager {
@@ -9,56 +9,6 @@ export default class DuelContractAPIManager {
     this.contract = new ethers.Contract(import.meta.env.VITE_DUELS_CONTRACT_ADDRESS, DuelsV1.abi, signer);
     this.gameIndex = gameIndex;
     this.lastEventBlockNumber = null; // needed for preventing to repeat of listener execution
-  }
-
-  async setEventListeners(dispatch, toast, getPlayer2DataByAddress) {
-    await this.contract.removeAllListeners();
-
-    this.contract.on("Joined", (id, player2, event) => {
-      if (Number(id) === this.gameIndex && event.log.blockNumber != this.lastEventBlockNumber) {
-        toast({
-          title: 'Player joined!',
-          description: 'Some player has joined game.',
-          status: 'warning',
-          position: 'top',
-          isClosable: true,
-          duration: null,
-        });
-        dispatch(player2JoinedEventEmitted(player2));
-        getPlayer2DataByAddress(player2);
-      }
-    });
-    this.contract.on("SlotFreed", (id, event) => {
-      if (Number(id) === this.gameIndex && event.log.blockNumber != this.lastEventBlockNumber) {
-        toast({
-          title: 'Slot freed!',
-          description: 'Seconds player quit or was kicked.',
-          status: 'warning',
-          position: 'top',
-          isClosable: true,
-          duration: null,
-        });
-        dispatch(slotFreedEventEmitted());
-      }
-    });
-    this.contract.on("Cancel", (id, event) => {
-      if (Number(id) === this.gameIndex && event.log.blockNumber != this.lastEventBlockNumber) {
-        this.lastEventBlockNumber = event.log.blockNumber;
-        toast({
-          title: 'Game canceled!',
-          description: 'Host has canceled game. All funds was returned to owners.',
-          status: 'warning',
-          position: 'top',
-          isClosable: true,
-          duration: null,
-        });
-        dispatch(gameCancelEventEmitted());
-      }
-    });
-  }
-
-  async removeAllListeners() {
-    await this.contract.removeAllListeners();
   }
 
   async createGame(playPeriod, betValue) {
@@ -79,8 +29,8 @@ export default class DuelContractAPIManager {
       host: data.host.toLowerCase(),
       player2: data.player2.toLowerCase(),
       bet: Number(data.bet),
-      timeStart: Number(data.timeStart),
-      playPeriod: Number(data.playPeriod),
+      timeStart: Number(data.timeStart) * 1_000,
+      playPeriod: Number(data.playPeriod) * 1_000,
       started: data.started,
       closed: data.closed,
       disagreement: data.disagreement,
@@ -91,9 +41,9 @@ export default class DuelContractAPIManager {
   }
 
   async join() {
-    const betValue = await this.contract.bet();
+    const betValue = Number((await this.contract.games(this.gameIndex)).bet);
 
-    const txn = await this.contract.join({ value: betValue });
+    const txn = await this.contract.join(this.gameIndex, { value: betValue });
     return await txn.wait();
   }
 
@@ -124,5 +74,111 @@ export default class DuelContractAPIManager {
       console.error(`Error executing method ${methodName}:`, error);
       throw error;
     }
+  }
+
+  setEventListeners(dispatch, toast, onChainRefetch, getPlayer2DataByAddress) {
+    this.contract.on("Joined", (id, player2, event) => {
+      if (Number(id) === this.gameIndex && event.log.blockNumber != this.lastEventBlockNumber) {
+        this.lastEventBlockNumber = event.log.blockNumber;
+        toast({
+          title: 'Player joined!',
+          description: 'Some player has joined game.',
+          status: 'warning',
+          position: 'top',
+          isClosable: true,
+          duration: null,
+        });
+        dispatch(player2JoinedEventEmitted(player2));
+        getPlayer2DataByAddress(player2);
+      }
+    });
+    this.contract.on("SlotFreed", (id, event) => {
+      if (Number(id) === this.gameIndex && event.log.blockNumber != this.lastEventBlockNumber) {
+        this.lastEventBlockNumber = event.log.blockNumber;
+        toast({
+          title: 'Slot freed!',
+          description: 'Seconds player quit or was kicked.',
+          status: 'warning',
+          position: 'top',
+          isClosable: true,
+          duration: null,
+        });
+        dispatch(slotFreedEventEmitted());
+      }
+    });
+    this.contract.on("Cancel", (id, event) => {
+      if (Number(id) === this.gameIndex && event.log.blockNumber != this.lastEventBlockNumber) {
+        this.lastEventBlockNumber = event.log.blockNumber;
+        toast({
+          title: 'Game canceled!',
+          description: 'Host has canceled game. All funds were returned to owners.',
+          status: 'warning',
+          position: 'top',
+          isClosable: true,
+          duration: null,
+        });
+        dispatch(gameCancelEventEmitted());
+      }
+    });
+    this.contract.on("Start", (id, player2, event) => {
+      if (Number(id) === this.gameIndex && event.log.blockNumber != this.lastEventBlockNumber) {
+        this.lastEventBlockNumber = event.log.blockNumber;
+        toast({
+          title: 'Game started!',
+          description: 'Participants will play, and then each of them shall contribute the result.',
+          status: 'warning',
+          position: 'top',
+          isClosable: true,
+          duration: null,
+        });
+        onChainRefetch();
+      }
+    });
+    this.contract.on("Victory", (id, winner, event) => {
+      if (Number(id) === this.gameIndex && event.log.blockNumber != this.lastEventBlockNumber) {
+        this.lastEventBlockNumber = event.log.blockNumber;
+        toast({
+          title: 'The winner has been determined!',
+          description: 'Game is finished now. Prize fund has been transferred to the winner.',
+          status: 'warning',
+          position: 'top',
+          isClosable: true,
+          duration: null,
+        });
+        dispatch(victoryEventEmitted(winner));
+      }
+    });
+    this.contract.on("Draw", (id, event) => {
+      if (Number(id) === this.gameIndex && event.log.blockNumber != this.lastEventBlockNumber) {
+        this.lastEventBlockNumber = event.log.blockNumber;
+        toast({
+          title: 'Game ended in a draw!',
+          description: 'There is no winner. Prize fund was divided equally.',
+          status: 'warning',
+          position: 'top',
+          isClosable: true,
+          duration: null,
+        });
+        onChainRefetch();
+      }
+    });
+    this.contract.on("Disagreement", (id, event) => {
+      if (Number(id) === this.gameIndex && event.log.blockNumber != this.lastEventBlockNumber) {
+        this.lastEventBlockNumber = event.log.blockNumber;
+        toast({
+          title: 'Players reached disagreement!',
+          description: 'The result will be decided by the arbitrator. But until the decision is made, players can change their vote.',
+          status: 'warning',
+          position: 'top',
+          isClosable: true,
+          duration: null,
+        });
+        onChainRefetch();
+      }
+    });
+  }
+
+  async removeAllListeners() {
+    await this.contract.removeAllListeners();
   }
 }
