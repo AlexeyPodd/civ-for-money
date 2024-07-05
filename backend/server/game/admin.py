@@ -7,4 +7,4 @@ admin.site.register(Game, GameAdmin)
 admin.site.register(Rules, RulesAdmin)
 
 admin.site.site_title = 'Admin'
-admin.site.site_header = 'CivForMoney Administration'
+admin.site.site_header = 'DuelMasters Administration'

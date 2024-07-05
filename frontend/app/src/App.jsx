@@ -20,11 +20,13 @@ import NewGameContainer from "./pages/NewGame/NewGameContainer.jsx";
 import Profile from "./pages/Profile/Profile.jsx";
 import MyGames from "./pages/UserGames/MyGames.jsx";
 import Page404 from "./pages/Page404.jsx";
+import Home from "./pages/Home/Home.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<RootLayout />}>
-      <Route index element={<Lobby />} />
+      <Route index element={<Home />} />
+      <Route path="lobby" element={<Lobby />} />
       <Route path="my-games" element={<MyGames />} />
       <Route path="game/:gameID" element={<GameContainer />} />
       <Route path="new-game" element={<NewGameContainer />} />
@@ -48,7 +50,7 @@ function App() {
   )
 }
 
-export default function CivForMoneyApp() {
+export default function DuelMastersApp() {
   return (
     <Provider store={store}>
       <ChakraProvider>

@@ -27,12 +27,16 @@ class WalletSerializer(serializers.ModelSerializer):
 
 
 class UserShortSerializer(serializers.ModelSerializer):
+    """Short version of serializer for lists of related objects"""
+
     class Meta:
         model = User
         fields = ('uuid', 'username', 'avatar', 'victories', 'defeats', 'draws')
 
 
 class WalletShortSerializer(serializers.ModelSerializer):
+    """Short version of serializer for lists of related objects"""
+
     owner = UserShortSerializer(read_only=True)
 
     class Meta:

@@ -24,6 +24,13 @@ def get_game_types(request):
 
 
 class RulesViewSet(ModelViewSet):
+    """
+    Ensures that rules of already created games will not be deleted,
+    or modified. Instead, if rule is deleting - it will be marked as deleted,
+    and not showing for new games. If rule for existing game is modifying -
+    server is creating new one, and 'deleting' old one.
+    """
+
     serializer_class = RulesSerializer
     permission_classes = (RulesPermission,)
 
@@ -35,12 +42,17 @@ class RulesViewSet(ModelViewSet):
         return queryset
 
     def perform_destroy(self, instance):
-        instance.deleted = True
-        instance.save()
+        if instance.games.exists():
+            instance.deleted = True
+            instance.save()
+        else:
+            super().perform_destroy(instance)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
         if instance.games.exists():
+            instance.deleted = True
+            instance.save()
             return self.create(request, *args, **kwargs)
 
         serializer = self.get_serializer(instance, data=request.data)
@@ -72,6 +84,10 @@ class GameViewSet(mixins.CreateModelMixin,
                 raise ValueError('no serializer for this request type')
 
     def create(self, request, *args, **kwargs):
+        """
+        When new game is creating all on-chain parameters are retrieving for blockchain itself.
+        User provides only parameters that are not on-chain, like game title, rules, etc.
+        """
         game_index = request.data['game_index']
 
         if Game.objects.filter(game_index=game_index).exists():
@@ -158,11 +174,13 @@ class GameViewSet(mixins.CreateModelMixin,
 
     @action(methods=['GET'], detail=False)
     def lobby(self, request):
+        """returns paginated list of games that has open slot for player and are not canceled"""
         queryset = self.__get_list_queryset('lobby', None)
         return self.__get_paginated_response(queryset)
 
     @action(methods=['GET'], detail=False)
     def user_actual_games(self, request):
+        """returns paginated list of user games that was NOT finished or canceled"""
         try:
             uuid = int(self.request.query_params.get('uuid', ''))
         except ValueError:
@@ -176,6 +194,7 @@ class GameViewSet(mixins.CreateModelMixin,
 
     @action(methods=['GET'], detail=False)
     def user_closed_games(self, request):
+        """returns paginated list of user games that was finished or canceled"""
         try:
             uuid = int(self.request.query_params.get('uuid', ''))
         except ValueError:
@@ -188,6 +207,7 @@ class GameViewSet(mixins.CreateModelMixin,
 
     @action(methods=['GET'], detail=False)
     def disputed_games(self, request):
+        """returns list of all games that are disputed, but not finished (closed)"""
         queryset = self.__get_list_queryset('disputed_not_closed', None)
         return self.__get_paginated_response(queryset)
 

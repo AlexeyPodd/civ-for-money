@@ -2,7 +2,7 @@ import { selectWalletConnected } from "../redux/authSlice";
 import ConnectWalletOffer from "../components/Offers/ConnectWalletOffer";
 import { useSelector } from "react-redux";
 
-export default function withConnectWallet(Component) {
+export default function withConnectWalletOffer(Component) {
   function ConnectWalletOfferComponent(props) {
     const walletConnected = useSelector(selectWalletConnected);
 

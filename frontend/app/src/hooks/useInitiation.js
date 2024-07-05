@@ -5,6 +5,8 @@ import { tokenGotten, tokenLost } from "../redux/authSlice";
 import { useGetUserDataQuery } from "../redux/api";
 
 export default function UseInitiation() {
+  // checking validity of auth token, if yes - getting user data.
+  
   const initialized = useSelector(selectInitialized);
   const dispatch = useDispatch();
 

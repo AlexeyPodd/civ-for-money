@@ -7,6 +7,7 @@ import { useState } from "react";
 import { ToastContext } from "../context/ToastContext";
 
 export default function RootLayout() {
+  // signer and toast for using in different components, through context
   const [signer, setSigner] = useState();
   const toast = useToast();
 

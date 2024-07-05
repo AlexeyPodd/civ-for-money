@@ -28,9 +28,8 @@ export default function Game({
   const player2Joined = Boolean(serverGameData.player2 || onChainGameData.player2 != ethers.ZeroAddress);
   const isHost = uuid === serverGameData.host.uuid;
   const isPlayer2 = uuid === serverGameData.player2?.uuid;
-  const walletIsWrong = false;
-  // const walletIsWrong = isWalletConnected && (isHost && connectedWalletAddress != onChainGameData.host
-  //   || isPlayer2 && connectedWalletAddress != onChainGameData.player2);
+  const walletIsWrong = isWalletConnected && (isHost && connectedWalletAddress != onChainGameData.host
+    || isPlayer2 && connectedWalletAddress != onChainGameData.player2);
 
   return <>
     {!isWalletConnected && <WalletIsNotConnectedBanner />}

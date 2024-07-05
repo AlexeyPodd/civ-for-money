@@ -6,7 +6,10 @@ from steam_auth.models import User, Wallet
 class Game(models.Model):
     """Game record"""
     class GameTitle(models.TextChoices):
+        CHESS = "CHSS"
         CIVILIZATION_5 = "CIV5"
+        CIVILIZATION_6 = "CIV6"
+        DOTA_2 = 'DOTA'
 
     class Vote(models.IntegerChoices):
         NOT_VOTED = 0

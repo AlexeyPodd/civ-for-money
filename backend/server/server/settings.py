@@ -147,7 +147,7 @@ STEAM_GET_PLAYER_SUMMARIES_URL = 'http://api.steampowered.com/ISteamUser/GetPlay
 
 
 # Web3 settings
-SMART_CONTRACT_ADDRESS = "0x2A97D32b93fd9cf072fFEf102B541CF21A73A2e2"
+SMART_CONTRACT_ADDRESS = os.environ.get('SMART_CONTRACT_ADDRESS')
 ALCHEMY_HTTP_ADDRESS = os.environ.get('ALCHEMY_HTTP_ADDRESS')
 DUELS_V1_ABI = ('[{"inputs": [], "name": "InvalidInitialization", "type": "error"}, {"inputs": [], "name": "NotInitiali'
                 'zing", "type": "error"}, {"anonymous": false, "inputs": [{"indexed": false, "internalType": "uint256",'

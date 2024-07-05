@@ -1,4 +1,4 @@
-export default function parseLinkToGetParams() {
+export default function parseURLToGetParams() {
   const queryParams = {};
   const queryString = window.location.search.split('?')[1];
   if (queryString) {

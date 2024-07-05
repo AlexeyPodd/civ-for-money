@@ -16,7 +16,7 @@ import { useDisclosure } from "@chakra-ui/react";
 
 function NewGameContainer() {
   // server api
-  const { error: gettingRulesListError, isLoading: isGettingRulesList } = useGetUserRulesQuery();
+  const { error: gettingRulesListError, isLoading: isGettingRulesList } = useGetUserRulesQuery({}, {refetchOnMountOrArgChange: true});
   const [deleteRule, { isSuccess: ruleIsDeleted, isLoading: ruleIsDeleting, error: ruleDeletingError }] = useDeleteRuleMutation();
   const { data: gameTypes, error: gettingGameTypesError, isLoading: isGettingGameTypes } = useGetGameTypesQuery();
   const [updateRule, { isLoading: isRuleUpdating }] = useUpdateRuleMutation();

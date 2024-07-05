@@ -19,10 +19,10 @@ export default function Navbar({userIsArbiter}) {
 
   return (
     <Flex as="nav" alignItems="center" gap="10px" mb="40px" bg="green.400" flexWrap="wrap" justify="space-between" >
-      <NavLink to="/"><Heading h="68px" as="h1" p="15px" >Civ For Money</Heading></NavLink>
+      <NavLink to="/"><Heading h="68px" as="h1" p="15px" >DuelMasters</Heading></NavLink>
 
       <HStack h="68px" color="white" gap="30px" fontSize="1.2em" >
-        <Link as={NavLink} to="/" sx={NavLinkStyles}  >
+        <Link as={NavLink} to="/lobby" sx={NavLinkStyles}  >
           <Flex sx={FlexNavStyles} >Lobby</Flex>
         </Link>
         <Link as={NavLink} to="/my-games" sx={NavLinkStyles} >

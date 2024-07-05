@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from game.web3.utils import recover_address
 from .models import User, Wallet, PreBanWarning
-from .serializers import UserSerializer, WalletShortSerializer, UserShortSerializer
+from .serializers import UserSerializer, WalletShortSerializer
 from .steam_requests import validate_steam_login, get_steam_user_data
 
 
@@ -117,7 +117,7 @@ def check_wallet_registration(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def register_wallet(request):
-    """associates wallet address wth steam account"""
+    """associates (or re-associates) wallet address with steam account"""
 
     try:
         address = recover_address(request.data['message'], request.data['signature'])

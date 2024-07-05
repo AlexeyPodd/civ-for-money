@@ -3,6 +3,9 @@ import { useDispatch } from "react-redux";
 import { onChainGameDataFetched } from "../redux/gameSlice";
 
 export default function useFetchOnChainGameData(contractAPI) {
+  // hook for fetching game parameters from blockchain
+  // refetching on contractAPI is changing ot force using refetch
+  // isLoading === true only on initial fetching
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);

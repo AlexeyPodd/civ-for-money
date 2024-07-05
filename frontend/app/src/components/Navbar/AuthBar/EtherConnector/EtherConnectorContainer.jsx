@@ -24,6 +24,9 @@ export default function EtherConnectorContainer() {
   const [isConnecting, setIsConnecting] = useState(false);
 
   async function initializeSigner() {
+    // starting process of connection to browser wallet account, 
+    // and subscribes to an event of changing account in wallet (or disconnect initialized from wallet interface)
+
     setIsConnecting(true);
     let accounts = [];
     try {
@@ -43,13 +46,14 @@ export default function EtherConnectorContainer() {
   }
 
   async function connect() {
+    // connecting wallet process
     setIsConnecting(true);
     dispatch(setWalletDisconnected());
     const s = await provider.getSigner();
     setSigner(s);
 
     try {
-      // checking is wallet registered
+      // checking is wallet registered on server
       await checkWalletRegistered(s.address).unwrap();
     } catch (error) {
       if (error.status === 404) {
@@ -57,7 +61,7 @@ export default function EtherConnectorContainer() {
         toast({
           title: 'Your wallet address is not registered on server.',
           description: 'Please sign message to proof that you are indeed an owner of this Ethereum address.',
-          status: 'warning',
+          status: 'loading',
           duration: null,
           position: 'top',
         });
@@ -81,6 +85,8 @@ export default function EtherConnectorContainer() {
   }
 
   async function onAccountChange(accounts) {
+    // connecting to another wallet account if it's changed,
+    // or disconnecting if wallet was disconnected from wallet interface
     if (accounts.length === 0) {
       disconnect();
     } else {

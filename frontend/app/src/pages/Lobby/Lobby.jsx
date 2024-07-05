@@ -15,7 +15,7 @@ export default function Lobby() {
   const [pageNumber, setPageNumber] = useState(1);
   const pageSize = useSelector(selectLobbyGamesPageSize);
 
-  const { isLoading, error, refetch } = useGetLobbyGamesQuery(
+  const { isLoading, isFetching, error, refetch } = useGetLobbyGamesQuery(
     { pageNumber, pageSize },
     { refetchOnMountOrArgChange: true },
   );
@@ -52,6 +52,7 @@ export default function Lobby() {
         leftIcon={<RepeatClockIcon />}
         colorScheme="green"
         variant="outline"
+        isDisabled={isFetching}
         >Refresh</Button>
       </HStack>
     </>

@@ -4,6 +4,9 @@ import { gameCancelEventEmitted, player2JoinedEventEmitted, slotFreedEventEmitte
 
 
 export default class DuelContractAPIManager {
+  // class for interacting with on-chain contract,
+  // getting specific game parameters form EVM storage and listening of this game on-chain events
+
   constructor(signer, gameIndex = null) {
     this.signer = signer;
     this.contract = new ethers.Contract(import.meta.env.VITE_DUELS_CONTRACT_ADDRESS, DuelsV1.abi, signer);
