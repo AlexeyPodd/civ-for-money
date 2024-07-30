@@ -88,7 +88,10 @@ class GameViewSet(mixins.CreateModelMixin,
         When new game is creating all on-chain parameters are retrieving for blockchain itself.
         User provides only parameters that are not on-chain, like game title, rules, etc.
         """
-        game_index = request.data['game_index']
+        game_index = request.data.get('game_index')
+
+        if game_index is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if Game.objects.filter(game_index=game_index).exists():
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -189,7 +192,6 @@ class GameViewSet(mixins.CreateModelMixin,
         user = get_object_or_404(User, uuid=uuid)
 
         queryset = self.__get_list_queryset('user_actual', user)
-        print('here')
         return self.__get_paginated_response(queryset)
 
     @action(methods=['GET'], detail=False)
@@ -211,7 +213,8 @@ class GameViewSet(mixins.CreateModelMixin,
         queryset = self.__get_list_queryset('disputed_not_closed', None)
         return self.__get_paginated_response(queryset)
 
-    def __get_list_queryset(self, kind, user):
+    @staticmethod
+    def __get_list_queryset(kind, user):
         match kind:
             case "lobby":
                 return Game.objects.filter(player2__isnull=True, closed=False)

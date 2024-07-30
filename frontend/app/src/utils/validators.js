@@ -12,7 +12,7 @@ export function steamParamsIsValid(steamParams) {
     "openid.signed",
   ]
   for (let key of requiredKeys) {
-    if (!key in steamParams) return false;
+    if (!steamParams.has(key)) return false;
   }
   return true;
 }

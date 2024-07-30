@@ -15,13 +15,16 @@ from .steam_requests import validate_steam_login, get_steam_user_data
 
 @api_view(['POST'])
 def login(request):
-    if not validate_steam_login(request.data.copy()):
+    if not validate_steam_login(request.data):
         return Response({'detail': 'Login validation failed.'}, status=status.HTTP_400_BAD_REQUEST)
 
     uuid = re.search(r'https://steamcommunity.com/openid/id/(\d+)', request.data['openid.claimed_id']).group(1)
 
     # updating user's data from steam
-    user_data = get_steam_user_data(uuid)
+    try:
+        user_data = get_steam_user_data(uuid)
+    except ValueError as err:
+        return Response({'detail': str(err)}, status=status.HTTP_404_NOT_FOUND)
 
     # creating user if not exists, or updating user's info
     if User.objects.filter(uuid=uuid).exists():
@@ -59,6 +62,7 @@ def logout(request):
 def get_user_data(request):
     """
     Returns avatar and username on given uuid parameter.
+    Updates user data from steam server.
     If uuid was not given - returns uuid, avatar and username of requester (if he is authenticated).
     """
     uuid = request.GET.get('uuid', '')
@@ -78,7 +82,10 @@ def get_user_data(request):
 
         user = get_object_or_404(User, uuid=uuid)
 
-    user_data = get_steam_user_data(uuid)
+    try:
+        user_data = get_steam_user_data(uuid)
+    except ValueError as err:
+        return Response({'detail': str(err)}, status=status.HTTP_404_NOT_FOUND)
 
     serializer = UserSerializer(
         user,
@@ -109,7 +116,7 @@ def get_user_data_by_address(request):
 def check_wallet_registration(request):
     """returns response with 404 status if wallet is not associated with this steam account"""
 
-    address = request.data['address']
+    address = request.data.get('address')
     get_object_or_404(Wallet, address=address, owner=request.user)
     return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -120,7 +127,7 @@ def register_wallet(request):
     """associates (or re-associates) wallet address with steam account"""
 
     try:
-        address = recover_address(request.data['message'], request.data['signature'])
+        address = recover_address(request.data.get('message'), request.data.get('signature'))
     except:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 

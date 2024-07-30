@@ -10,6 +10,8 @@ class Game(models.Model):
         CIVILIZATION_5 = "CIV5"
         CIVILIZATION_6 = "CIV6"
         DOTA_2 = 'DOTA'
+        HEARTHSTONE = 'HRST'
+        GWINT = 'GWNT'
 
     class Vote(models.IntegerChoices):
         NOT_VOTED = 0

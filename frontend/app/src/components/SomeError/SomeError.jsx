@@ -1,7 +1,6 @@
 import { Heading, Text } from "@chakra-ui/react";
 
 export default function SomeError({error}) {
-  console.log(error)
   return (
     <>
       <Heading as='h3'>Oops...</Heading>
