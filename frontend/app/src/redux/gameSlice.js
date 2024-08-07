@@ -12,11 +12,9 @@ const gameSlice = createSlice({
   reducers: {
     gameCreatingStarted: state => {
       state.isCreatingGame = true;
-      window.onbeforeunload = () => true;
     },
     gameCreatingFinished: state => {
       state.isCreatingGame = false;
-      window.onbeforeunload = undefined;
     },
     onChainGameDataFetched: (state, action) => {
       state.onChainGameData = {

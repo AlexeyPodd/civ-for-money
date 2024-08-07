@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 
-const provider = new ethers.BrowserProvider(window.ethereum);
+let provider;
+if (window.ethereum) provider = new ethers.BrowserProvider(window.ethereum);
 
 export default provider;

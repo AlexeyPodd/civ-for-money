@@ -9,5 +9,5 @@ export default function secondsDurationToRepresentation(seconds) {
   if (minutes) representationParts.push(`${minutes} minute(s)`);
 
   if (days || hours || minutes) return representationParts.join(', ');
-  else return `${seconds} seconds`;
+  else return `${seconds} second(s)`;
 }

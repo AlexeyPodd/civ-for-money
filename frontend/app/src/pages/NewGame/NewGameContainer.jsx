@@ -56,6 +56,7 @@ function NewGameContainer() {
   useEffect(() => {
     if (gameRegistered || gameFailedToRegister) {
       dispatch(gameCreatingFinished());
+      window.onbeforeunload = undefined;
     }
   }, [gameRegistered, gameFailedToRegister]);
 
@@ -74,6 +75,7 @@ function NewGameContainer() {
 
     //refreshing statuses states
     dispatch(gameCreatingStarted());
+    window.onbeforeunload = () => true;
     setSettingRulesSuccess(false);
     setSettingRulesError(false);
     setIsCreatingOnChain(false);
@@ -90,6 +92,7 @@ function NewGameContainer() {
     catch (err) {
       setRulesResponseErrors(err);
       dispatch(gameCreatingFinished());
+      window.onbeforeunload = undefined;
       setSettingRulesError(true);
       return;
     }
@@ -110,6 +113,7 @@ function NewGameContainer() {
     catch (err) {
       console.error(err);
       dispatch(gameCreatingFinished());
+      window.onbeforeunload = undefined;
       setIsCreatingOnChainError(true);
       setIsCreatingOnChain(false);
       return;

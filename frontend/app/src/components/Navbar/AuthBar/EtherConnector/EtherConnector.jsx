@@ -10,6 +10,7 @@ export default function EtherConnector({
   disconnect,
   initializeSigner,
   isConnecting,
+  installMetamaskToast,
  }) {
   const [showDisconnectButton, setShowDisconnectButton] = useState(false);
 
@@ -22,7 +23,7 @@ export default function EtherConnector({
     <Button
       colorScheme="yellow"
       isLoading={isConnecting || isRegistering}
-      onClick={initializeSigner}
+      onClick={window.ethereum ? initializeSigner : installMetamaskToast}
     >
       Connect Wallet
     </Button>

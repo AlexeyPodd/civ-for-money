@@ -94,6 +94,16 @@ export default function EtherConnectorContainer() {
     }
   }
 
+  function installMetamaskToast() {
+    toast({
+      title: 'Wallet is not installed',
+      description: 'Please install Metamask to be able to interact with Ethereum.',
+      status: 'error',
+      isClosable: true,
+      position: 'top',
+    });
+  }
+
   useEffect(() => {
     if (isError) {
       disconnect();
@@ -122,5 +132,6 @@ export default function EtherConnectorContainer() {
     disconnect={disconnect}
     initializeSigner={initializeSigner}
     isConnecting={isConnecting}
+    installMetamaskToast={installMetamaskToast}
   />
 }
