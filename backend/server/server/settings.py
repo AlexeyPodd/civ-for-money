@@ -32,6 +32,8 @@ ALLOWED_HOSTS = []
 
 CORS_ALLOWED_ORIGINS = ['http://localhost:5173']
 
+REACT_APP_DIST = BASE_DIR / "dist"
+
 
 # Application definition
 
@@ -47,6 +49,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'steam_auth',
     'game',
+    'react',
 ]
 
 MIDDLEWARE = [
@@ -133,7 +136,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = 'django_static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
