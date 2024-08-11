@@ -15,6 +15,7 @@ class User(AbstractUser):
     banned = models.BooleanField(default=False)
 
     USERNAME_FIELD = "uuid"
+    REQUIRED_FIELDS = ['username']
 
     def __str__(self):
         return self.username
